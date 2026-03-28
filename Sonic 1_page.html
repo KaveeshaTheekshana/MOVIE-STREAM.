@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonic the Hedgehog (2020) | MOVIE STREAM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e50914;
+            --accent: #25D366;
+            --bg-dark: #080808;
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            margin: 0; font-family: 'Inter', sans-serif; 
+            background: var(--bg-dark); color: #fff; 
+            overflow-x: hidden; user-select: none;
+        }
+
+        /* --- Logo Animation CSS (Added) --- */
+        .site-logo {
+            text-decoration: none; 
+            color: #fff; 
+            position: relative; 
+            padding-bottom: 5px;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .site-logo span {
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+        }
+
+        /* යටින් එන රතු ඉර (Animation) */
+        .site-logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateX(-50%);
+            border-radius: 5px;
+        }
+
+        .site-logo:hover::after {
+            width: 100%;
+        }
+
+        .site-logo:hover {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* --- Header --- */
+        .site-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            padding: 15px 5%; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            box-sizing: border-box; backdrop-filter: blur(10px);
+        }
+        
+        .header-back { color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; opacity: 0.8; transition: 0.3s; }
+        .header-back:hover { opacity: 1; transform: translateX(-5px); }
+
+        /* --- Hero Background --- */
+        .bg-blur {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://image.tmdb.org/t/p/original/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg');
+            background-size: cover; background-position: center top;
+            z-index: -2; filter: blur(30px) brightness(0.2); transform: scale(1.1);
+        }
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg-dark) 100%); z-index: -1;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            max-width: 1200px; margin: 100px auto 50px auto; padding: 20px;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .movie-hero { display: flex; flex-wrap: wrap; gap: 40px; margin-bottom: 50px; }
+
+        /* --- Poster --- */
+        .poster-section { flex: 1; min-width: 320px; position: relative; }
+        .poster-section img { 
+            width: 100%; border-radius: 15px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--border);
+            transition: 0.5s;
+        }
+        .poster-section:hover img { transform: scale(1.02); border-color: var(--primary); }
+
+        /* --- Movie Info --- */
+        .info-section { flex: 2; min-width: 350px; }
+        .info-section h1 { font-family: 'Poppins', sans-serif; font-size: clamp(2.5em, 5vw, 4em); margin: 0 0 10px 0; font-weight: 800; line-height: 1.1; }
+        
+        .badges { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .badge { background: var(--glass); border: 1px solid var(--border); padding: 5px 12px; border-radius: 5px; font-size: 13px; font-weight: 600; color: #ccc; }
+        .badge.rating { color: #ffc107; border-color: #ffc107; }
+        .badge.quality { background: var(--primary); color: white; border: none; }
+
+        .synopsis { font-size: 1.1em; line-height: 1.8; color: #ddd; margin-bottom: 30px; }
+
+        /* --- Detailed Specs --- */
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .detail-item span { display: block; font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 1px; }
+        .detail-item p { margin: 5px 0 0 0; font-size: 15px; font-weight: 600; color: #fff; }
+
+        /* --- Download Box --- */
+        .download-card {
+            background: var(--card-bg); border-radius: 20px; padding: 30px;
+            border: 1px solid var(--border); border-top: 4px solid var(--accent);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+        }
+        .download-card h3 { margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px; font-size: 1.4em; }
+        .download-card h3 i { color: var(--accent); }
+
+        input[type="text"] {
+            width: 100%; padding: 18px; margin-bottom: 20px; box-sizing: border-box;
+            border-radius: 12px; border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 16px;
+            text-align: center; outline: none; transition: 0.3s;
+        }
+        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(37, 211, 102, 0.2); }
+
+        .btn-group { display: flex; gap: 15px; }
+        .btn-main {
+            flex: 2; padding: 18px; background: linear-gradient(45deg, #1da851, #25D366);
+            color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px;
+            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+            text-transform: uppercase;
+        }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
+        .btn-main:disabled { background: #333; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-alt {
+            flex: 1; padding: 18px; background: var(--glass); color: #fff;
+            border: 1px solid var(--border); border-radius: 12px; font-weight: 700; 
+            cursor: pointer; transition: 0.3s; display: none; justify-content: center; align-items: center;
+        }
+        .btn-alt:hover { background: rgba(229, 9, 20, 0.2); border-color: var(--primary); }
+
+        /* --- Gallery --- */
+        .gallery-title { font-size: 1.5em; font-weight: 800; margin: 20px 0; display: flex; align-items: center; gap: 10px; }
+        .gallery-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        
+        .gallery-row { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px 0; scrollbar-width: none; }
+        .gallery-card { 
+            flex: 0 0 auto; width: 280px; border-radius: 12px; overflow: hidden; 
+            border: 1px solid var(--border); transition: 0.4s; cursor: pointer;
+        }
+        .gallery-card:hover { transform: scale(1.05); border-color: var(--primary); box-shadow: 0 10px 30px rgba(229,9,20,0.3); }
+        .gallery-card img { width: 100%; height: 160px; object-fit: cover; }
+
+        /* --- Modals --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px);
+        }
+        .modal-box {
+            background: #111; border: 1px solid var(--border); padding: 40px; border-radius: 20px;
+            text-align: center; max-width: 450px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+        }
+        .modal-btn { 
+            background: var(--primary); color: #fff; border: none; padding: 15px 30px; 
+            border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 20px;
+        }
+
+        #status { margin-top: 20px; font-weight: 600; text-align: center; display: none; }
+        .pulse-text { animation: pulse 1.5s infinite; color: #f39c12; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .success-text { color: var(--accent); font-weight: 800; font-size: 1.1em; }
+
+        .footer-strip {
+            margin-top: 50px; padding: 40px; text-align: center; background: #050505;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .movie-hero { flex-direction: column; text-align: center; }
+            .badges { justify-content: center; }
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <a href="films.html" class="site-logo">
+            MOVIE <span>STREAM</span>
+        </a>
+        <a href="films.html" class="header-back"><i class="fas fa-chevron-left"></i> BACK TO LIBRARY</a>
+    </header>
+
+    <div class="bg-blur"></div>
+    <div class="bg-overlay"></div>
+
+    <div class="container">
+        <div class="movie-hero">
+            <div class="poster-section">
+                <img src="https://image.tmdb.org/t/p/w500/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg" alt="Sonic Poster">
+            </div>
+
+            <div class="info-section">
+                <div class="badges">
+                    <span class="badge quality">4K ULTRA HD</span>
+                    <span class="badge rating"><i class="fas fa-star"></i> 6.5 IMDb</span>
+                    <span class="badge">2020</span>
+                    <span class="badge">PG-13</span>
+                    <span class="badge">Action / Comedy</span>
+                </div>
+                <h1>Sonic the Hedgehog</h1>
+                <p class="synopsis">
+                    සොනික් යනු වෙනත් ලෝකයකින් පැමිණි සුපිරි වේගවත් නිල් හෙජ්හෝග් කෙනෙකි. පෘථිවියේ සැඟවී ජීවත්වන ඔහු, අහම්බෙන් ඇති කරන මහා බලශක්ති තරංගයක් නිසා දුෂ්ට විද්‍යාඥ ඩොක්ටර් රොබෝට්නික්ගේ අවධානයට ලක්වේ. තමන්ගේ සුපිරි වේගය භාවිතා කරමින් ලෝකය බේරාගැනීමට ඔහුට සිදුවේ.
+                </p>
+
+                <div class="detail-grid">
+                    <div class="detail-item"><span>DIRECTOR</span><p>Jeff Fowler</p></div>
+                    <div class="detail-item"><span>STARRING</span><p>Jim Carrey, James Marsden</p></div>
+                    <div class="detail-item"><span>RUNTIME</span><p>1h 39min</p></div>
+                    <div class="detail-item"><span>LANGUAGE</span><p>Sinhala Subtitles</p></div>
+                </div>
+
+                <div class="download-card">
+                    <h3><i class="fab fa-whatsapp"></i> Get Movie via WhatsApp</h3>
+                    <input type="text" id="waNumber" placeholder="Ex: 94771234567" onclick="checkHistory()" autocomplete="off">
+                    <div class="btn-group">
+                        <button class="btn-main" id="sendBtn" onclick="triggerPreModal()">
+                            <i class="fas fa-magic"></i> GENERATE DOWNLOAD
+                        </button>
+                        <button class="btn-alt" id="cancelBtn" onclick="triggerCancel()">
+                            <i class="fas fa-times"></i> CANCEL
+                        </button>
+                    </div>
+                    <div id="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-title"><i class="fas fa-images"></i> SCENES & PHOTOS</div>
+        <div class="gallery-row">
+            <div class="gallery-card"><img src="https://image.tmdb.org/t/p/w500/gnWFYFTTUC62NHSGcMuo4JGK0t4.jpg"></div>
+            <div class="gallery-card"><img src="https://image.tmdb.org/t/p/w500/zaRaS0GDzWRZgQbC1kPrV3AfBaz.jpg"></div>
+            <div class="gallery-card"><img src="https://image.tmdb.org/t/p/w500/diFNHa3SXaGSSFovGatNWxLz2tn.jpg"></div>
+            <div class="gallery-card"><img src="https://image.tmdb.org/t/p/w500/ckkRuGhjx4hOSQZInA8lZlG3pI7.jpg"></div>
+        </div>
+    </div>
+
+    <div class="footer-strip">
+        <div style="font-size: 14px; opacity: 0.6; margin-bottom: 15px;">POWERED BY <span style="color:var(--primary); font-weight: 800;">KAVEESHA THEEKSHANA</span></div>
+        <a href="https://wa.me/94710388481?text=Hi%20Kaveesha,%20Help%20with%20Sonic!" target="_blank" class="btn-bug-contact" style="color: #ccc; text-decoration: none; border: 1px solid #333; padding: 10px 20px; border-radius: 30px; font-size: 13px;">
+            <i class="fas fa-bug"></i> REPORT A BUG
+        </a>
+    </div>
+
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-box">
+            <i class="fas fa-history" style="font-size: 40px; color: var(--primary);"></i>
+            <h2>Welcome Back!</h2>
+            <p>පද්ධතියේ ඇති ඔබගේ මෙම අංකය භාවිතා කරනවාද? <br><b id="savedNum" style="color:var(--primary)"></b></p>
+            <button class="modal-btn" onclick="useOldNum()">ඔව්, එයට එවන්න</button>
+            <button style="background:transparent; color:#777; border:none; margin-top:15px; cursor:pointer" onclick="closeM('historyModal')">වෙනත් අංකයක්</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="instructionModal">
+        <div class="modal-box">
+            <i class="fas fa-paper-plane" style="font-size: 40px; color: var(--accent);"></i>
+            <h2>සූදානම් වන්න! 🎬</h2>
+            <p>චිත්‍රපටය ඔබගේ WhatsApp ගිණුමට පැමිණෙනු ඇත. File එක විශාල බැවින් මඳ වේලාවක් රැඳී සිටින්න.</p>
+            <button class="modal-btn" style="background:var(--accent)" onclick="triggerBot()">හරි, එවන්න!</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="cancelPopup">
+        <div class="modal-box">
+            <i class="fas fa-ban" style="font-size: 45px; color: var(--primary);"></i>
+            <h2>අවලංගු කරන ලදි!</h2>
+            <p id="cancelMsgText">ඔබගේ ඉල්ලීම සාර්ථකව ඉවත් කරන ලදි.</p>
+            <button class="modal-btn" onclick="closeM('cancelPopup')">හරි (OK)</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="limitModal">
+        <div class="modal-box">
+            <i class="fas fa-clock" style="font-size: 45px; color: #f39c12;"></i>
+            <h2>ඉවසන්න! ⏳</h2>
+            <p>ඔබ දැනටමත් මෙම චිත්‍රපටය ලබාගෙන ඇත. නැවත ලබාගැනීමට තව මඳක් රැඳී සිටින්න.</p>
+            <p id="timeLeft" style="color:#f39c12; font-weight:bold; font-size:1.2em;"></p>
+            <button class="modal-btn" style="background:#444" onclick="closeM('limitModal')">හරි</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        const BOT_URL = "http://104.64.211.194:3000"; 
+        const MOVIE_NAME = "Sonic_2020";
+        const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdGScB1AAAGvQ/kFpKysNIbfZld2Yln69VbYykF09qmn5knq53MKmA3-w";
+        const COOLDOWN_TIME = 2 * 60 * 60 * 1000;
+
+        window.onload = function() {
+            const savedState = localStorage.getItem('sendingState_' + MOVIE_NAME);
+            const savedNumber = localStorage.getItem('sendingNumber_' + MOVIE_NAME);
+            if (savedState === 'sending' && savedNumber) {
+                document.getElementById('waNumber').value = savedNumber;
+                setSendingUI(true);
+                checkBotTask(savedNumber);
+            }
+        };
+
+        function checkHistory() {
+            const last = localStorage.getItem('last_num');
+            if (last && document.getElementById('waNumber').value === "") {
+                document.getElementById('savedNum').innerText = last;
+                document.getElementById('historyModal').style.display = 'flex';
+            }
+        }
+        function useOldNum() { document.getElementById('waNumber').value = localStorage.getItem('last_num'); closeM('historyModal'); }
+        function closeM(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function triggerPreModal() {
+            const num = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
+            if (num.length < 10) { alert("🚨 කරුණාකර නිවැරදි අංකයක් ලබාදෙන්න!"); return; }
+
+            const lastSent = localStorage.getItem('lastSent_' + MOVIE_NAME);
+            const now = new Date().getTime();
+            if (lastSent && (now - lastSent < COOLDOWN_TIME)) {
+                const remaining = COOLDOWN_TIME - (now - lastSent);
+                const hrs = Math.floor(remaining / (3600000));
+                const mins = Math.floor((remaining % 3600000) / 60000);
+                document.getElementById('timeLeft').innerText = `තව පැය ${hrs}යි විනාඩි ${mins}ක් ඇත.`;
+                document.getElementById('limitModal').style.display = 'flex';
+                return;
+            }
+            document.getElementById('instructionModal').style.display = 'flex';
+        }
+
+        async function triggerCancel() {
+            const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
+            if(!number) return;
+
+            const cancelBtn = document.getElementById('cancelBtn');
+            cancelBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CANCELLING...';
+
+            try {
+                const response = await fetch(`${BOT_URL}/cancel?number=${number}`, { method: 'GET', keepalive: true });
+                const data = await response.json();
+                
+                let movieNameText = MOVIE_NAME;
+                if(data.movieName) { movieNameText = data.movieName; }
+
+                document.getElementById('cancelMsgText').innerText = `ඔබගේ ඉල්ලීමට අනුව '${movieNameText}' යැවීම සාර්ථකව අවලංගු කරන ලදි.`;
+                
+                clearSendingUI();
+                document.getElementById('cancelPopup').style.display = 'flex';
+            } catch (err) {
+                clearSendingUI();
+                document.getElementById('cancelMsgText').innerText = `ඔබගේ ඉල්ලීම සාර්ථකව ඉවත් කරන ලදි.`;
+                document.getElementById('cancelPopup').style.display = 'flex';
+            }
+        }
+
+        async function triggerBot() {
+            closeM('instructionModal');
+            const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
+            localStorage.setItem('last_num', number);
+            localStorage.setItem('sendingState_' + MOVIE_NAME, 'sending');
+            localStorage.setItem('sendingNumber_' + MOVIE_NAME, number);
+            setSendingUI(true);
+            await checkBotTask(number);
+        }
+
+        async function checkBotTask(number) {
+            const status = document.getElementById('status');
+            try {
+                const response = await fetch(`${BOT_URL}/send-movie?number=${number}&movieUrl=${encodeURIComponent(MOVIE_LINK)}&movieName=${encodeURIComponent(MOVIE_NAME)}`, { method: 'GET', keepalive: true });
+                const data = await response.json();
+                
+                if (response.ok && data.status === "Success") {
+                    localStorage.setItem('lastSent_' + MOVIE_NAME, new Date().getTime());
+                    clearSendingUI();
+                    status.style.display = "block";
+                    status.innerHTML = `<div class="success-text"><i class="fas fa-check-circle"></i> සාර්ථකව ඔබගේ අංකයට යවන ලදි! ✅</div>`;
+                    document.getElementById('sendBtn').style.display = 'none';
+                } else if (response.status === 429) {
+                    clearSendingUI();
+                    document.getElementById('timeLeft').innerText = data.error;
+                    document.getElementById('limitModal').style.display = 'flex';
+                } else if (response.status === 499) {
+                    clearSendingUI();
+                } else {
+                    clearSendingUI();
+                    alert("දෝෂයක් මතු විය: " + (data.error || "Unknown Error"));
+                }
+            } catch (err) { 
+                clearSendingUI();
+                const btn = document.getElementById('sendBtn');
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> SERVER OFFLINE';
+                btn.style.background = 'linear-gradient(135deg, #e50914, #b20710)'; 
+                btn.disabled = true;
+                
+                status.style.display = "block";
+                status.innerHTML = '<div style="color:#e50914; font-weight:bold; padding: 10px; background: rgba(229, 9, 20, 0.1); border-radius: 8px; border: 1px solid #e50914;"><i class="fas fa-times-circle"></i> දැනට පද්ධතිය ක්‍රියා විරහිතයි. කරුණාකර Developer ව සම්බන්ධ කරගන්න.</div>';
+            }
+        }
+
+        function setSendingUI(isSending) {
+            const btn = document.getElementById('sendBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const status = document.getElementById('status');
+            if (isSending) {
+                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> GENERATING...'; btn.disabled = true;
+                cancelBtn.style.display = 'flex'; 
+                status.style.display = "block";
+                status.innerHTML = '<div class="pulse-text">චිත්‍රපටය යවමින් පවතී. රැඳී සිටින්න...</div>';
+            }
+        }
+
+        function clearSendingUI() {
+            localStorage.removeItem('sendingState_' + MOVIE_NAME);
+            const btn = document.getElementById('sendBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const status = document.getElementById('status');
+            
+            btn.innerHTML = '<i class="fas fa-magic"></i> GENERATE DOWNLOAD';
+            btn.disabled = false;
+            cancelBtn.innerHTML = '<i class="fas fa-times"></i> CANCEL';
+            cancelBtn.style.display = 'none';
+            status.style.display = "none";
+        }
+    </script>
+</body>
+</html>
