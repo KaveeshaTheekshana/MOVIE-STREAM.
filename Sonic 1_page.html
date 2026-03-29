@@ -22,67 +22,35 @@
             overflow-x: hidden; user-select: none;
         }
 
-        /* --- Logo Animation CSS (Added) --- */
         .site-logo {
-            text-decoration: none; 
-            color: #fff; 
-            position: relative; 
-            padding-bottom: 5px;
-            display: inline-block;
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            transition: 0.3s;
+            text-decoration: none; color: #fff; position: relative; 
+            padding-bottom: 5px; display: inline-block; font-family: 'Poppins', sans-serif;
+            font-size: 24px; font-weight: 800; text-transform: uppercase; 
+            letter-spacing: 2px; transition: 0.3s;
         }
-
-        .site-logo span {
-            color: var(--primary);
-            text-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
-        }
-
-        /* යටින් එන රතු ඉර (Animation) */
+        .site-logo span { color: var(--primary); text-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
         .site-logo::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 3px;
-            background: var(--primary);
-            box-shadow: 0 0 15px var(--primary);
+            content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px;
+            background: var(--primary); box-shadow: 0 0 15px var(--primary);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: translateX(-50%);
-            border-radius: 5px;
+            transform: translateX(-50%); border-radius: 5px;
         }
+        .site-logo:hover::after { width: 100%; }
+        .site-logo:hover { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
 
-        .site-logo:hover::after {
-            width: 100%;
-        }
-
-        .site-logo:hover {
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-
-        /* --- Custom Scrollbar --- */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #111; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
-        /* --- Header --- */
         .site-header {
             position: fixed; top: 0; left: 0; width: 100%;
             background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-            padding: 15px 5%; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; z-index: 1000; display: flex; justify-content: space-between; align-items: center;
             box-sizing: border-box; backdrop-filter: blur(10px);
         }
-        
         .header-back { color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; opacity: 0.8; transition: 0.3s; }
         .header-back:hover { opacity: 1; transform: translateX(-5px); }
 
-        /* --- Hero Background --- */
         .bg-blur {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('https://image.tmdb.org/t/p/original/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg');
@@ -94,27 +62,18 @@
             background: radial-gradient(circle at center, transparent 0%, var(--bg-dark) 100%); z-index: -1;
         }
 
-        /* --- Main Container --- */
-        .container {
-            max-width: 1200px; margin: 100px auto 50px auto; padding: 20px;
-            animation: fadeIn 1s ease-out;
-        }
-        
+        .container { max-width: 1200px; margin: 100px auto 50px auto; padding: 20px; animation: fadeIn 1s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .movie-hero { display: flex; flex-wrap: wrap; gap: 40px; margin-bottom: 50px; }
 
-        /* --- Poster --- */
         .poster-section { flex: 1; min-width: 320px; position: relative; }
         .poster-section img { 
-            width: 100%; border-radius: 15px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 1px solid var(--border);
-            transition: 0.5s;
+            width: 100%; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--border); transition: 0.5s;
         }
         .poster-section:hover img { transform: scale(1.02); border-color: var(--primary); }
 
-        /* --- Movie Info --- */
         .info-section { flex: 2; min-width: 350px; }
         .info-section h1 { font-family: 'Poppins', sans-serif; font-size: clamp(2.5em, 5vw, 4em); margin: 0 0 10px 0; font-weight: 800; line-height: 1.1; }
         
@@ -125,12 +84,10 @@
 
         .synopsis { font-size: 1.1em; line-height: 1.8; color: #ddd; margin-bottom: 30px; }
 
-        /* --- Detailed Specs --- */
         .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .detail-item span { display: block; font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 1px; }
         .detail-item p { margin: 5px 0 0 0; font-size: 15px; font-weight: 600; color: #fff; }
 
-        /* --- Download Box --- */
         .download-card {
             background: var(--card-bg); border-radius: 20px; padding: 30px;
             border: 1px solid var(--border); border-top: 4px solid var(--accent);
@@ -151,8 +108,7 @@
         .btn-main {
             flex: 2; padding: 18px; background: linear-gradient(45deg, #1da851, #25D366);
             color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px;
-            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
-            text-transform: uppercase;
+            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; text-transform: uppercase;
         }
         .btn-main:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
         .btn-main:disabled { background: #333; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -164,42 +120,29 @@
         }
         .btn-alt:hover { background: rgba(229, 9, 20, 0.2); border-color: var(--primary); }
 
-        /* --- Gallery --- */
         .gallery-title { font-size: 1.5em; font-weight: 800; margin: 20px 0; display: flex; align-items: center; gap: 10px; }
         .gallery-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-        
         .gallery-row { display: flex; gap: 20px; overflow-x: auto; padding: 10px 0 30px 0; scrollbar-width: none; }
-        .gallery-card { 
-            flex: 0 0 auto; width: 280px; border-radius: 12px; overflow: hidden; 
-            border: 1px solid var(--border); transition: 0.4s; cursor: pointer;
-        }
+        .gallery-card { flex: 0 0 auto; width: 280px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); transition: 0.4s; cursor: pointer; }
         .gallery-card:hover { transform: scale(1.05); border-color: var(--primary); box-shadow: 0 10px 30px rgba(229,9,20,0.3); }
         .gallery-card img { width: 100%; height: 160px; object-fit: cover; }
 
-        /* --- Modals --- */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center;
-            backdrop-filter: blur(15px);
+            background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(15px);
         }
         .modal-box {
             background: #111; border: 1px solid var(--border); padding: 40px; border-radius: 20px;
             text-align: center; max-width: 450px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.8);
         }
-        .modal-btn { 
-            background: var(--primary); color: #fff; border: none; padding: 15px 30px; 
-            border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 20px;
-        }
+        .modal-btn { background: var(--primary); color: #fff; border: none; padding: 15px 30px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 20px; }
 
         #status { margin-top: 20px; font-weight: 600; text-align: center; display: none; }
         .pulse-text { animation: pulse 1.5s infinite; color: #f39c12; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .success-text { color: var(--accent); font-weight: 800; font-size: 1.1em; }
 
-        .footer-strip {
-            margin-top: 50px; padding: 40px; text-align: center; background: #050505;
-            border-top: 1px solid var(--border);
-        }
+        .footer-strip { margin-top: 50px; padding: 40px; text-align: center; background: #050505; border-top: 1px solid var(--border); }
 
         @media (max-width: 768px) {
             .movie-hero { flex-direction: column; text-align: center; }
@@ -212,9 +155,7 @@
 <body>
 
     <header class="site-header">
-        <a href="films.html" class="site-logo">
-            MOVIE <span>STREAM</span>
-        </a>
+        <a href="films.html" class="site-logo">MOVIE <span>STREAM</span></a>
         <a href="films.html" class="header-back"><i class="fas fa-chevron-left"></i> BACK TO LIBRARY</a>
     </header>
 
@@ -223,10 +164,7 @@
 
     <div class="container">
         <div class="movie-hero">
-            <div class="poster-section">
-                <img src="https://image.tmdb.org/t/p/w500/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg" alt="Sonic Poster">
-            </div>
-
+            <div class="poster-section"><img src="https://image.tmdb.org/t/p/w500/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg" alt="Sonic Poster"></div>
             <div class="info-section">
                 <div class="badges">
                     <span class="badge quality">4K ULTRA HD</span>
@@ -236,27 +174,19 @@
                     <span class="badge">Action / Comedy</span>
                 </div>
                 <h1>Sonic the Hedgehog</h1>
-                <p class="synopsis">
-                    සොනික් යනු වෙනත් ලෝකයකින් පැමිණි සුපිරි වේගවත් නිල් හෙජ්හෝග් කෙනෙකි. පෘථිවියේ සැඟවී ජීවත්වන ඔහු, අහම්බෙන් ඇති කරන මහා බලශක්ති තරංගයක් නිසා දුෂ්ට විද්‍යාඥ ඩොක්ටර් රොබෝට්නික්ගේ අවධානයට ලක්වේ. තමන්ගේ සුපිරි වේගය භාවිතා කරමින් ලෝකය බේරාගැනීමට ඔහුට සිදුවේ.
-                </p>
-
+                <p class="synopsis">සොනික් යනු වෙනත් ලෝකයකින් පැමිණි සුපිරි වේගවත් නිල් හෙජ්හෝග් කෙනෙකි. පෘථිවියේ සැඟවී ජීවත්වන ඔහු, අහම්බෙන් ඇති කරන මහා බලශක්ති තරංගයක් නිසා දුෂ්ට විද්‍යාඥ ඩොක්ටර් රොබෝට්නික්ගේ අවධානයට ලක්වේ. තමන්ගේ සුපිරි වේගය භාවිතා කරමින් ලෝකය බේරාගැනීමට ඔහුට සිදුවේ.</p>
                 <div class="detail-grid">
                     <div class="detail-item"><span>DIRECTOR</span><p>Jeff Fowler</p></div>
                     <div class="detail-item"><span>STARRING</span><p>Jim Carrey, James Marsden</p></div>
                     <div class="detail-item"><span>RUNTIME</span><p>1h 39min</p></div>
                     <div class="detail-item"><span>LANGUAGE</span><p>Sinhala Subtitles</p></div>
                 </div>
-
                 <div class="download-card">
                     <h3><i class="fab fa-whatsapp"></i> Get Movie via WhatsApp</h3>
                     <input type="text" id="waNumber" placeholder="Ex: 94771234567" onclick="checkHistory()" autocomplete="off">
                     <div class="btn-group">
-                        <button class="btn-main" id="sendBtn" onclick="triggerPreModal()">
-                            <i class="fas fa-magic"></i> GENERATE DOWNLOAD
-                        </button>
-                        <button class="btn-alt" id="cancelBtn" onclick="triggerCancel()">
-                            <i class="fas fa-times"></i> CANCEL
-                        </button>
+                        <button class="btn-main" id="sendBtn" onclick="triggerPreModal()"><i class="fas fa-magic"></i> GENERATE DOWNLOAD</button>
+                        <button class="btn-alt" id="cancelBtn" onclick="triggerCancel()"><i class="fas fa-times"></i> CANCEL</button>
                     </div>
                     <div id="status"></div>
                 </div>
@@ -321,13 +251,12 @@
         document.addEventListener('contextmenu', event => event.preventDefault());
 
         const BOT_URL = "https://kaveesha2005-my-bots.hf.space";
-        
         const MOVIE_NAME = "Sonic_2020";
         const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdGScB1AAAGvQ/kFpKysNIbfZld2Yln69VbYykF09qmn5knq53MKmA3-w";
         const COOLDOWN_TIME = 2 * 60 * 60 * 1000;
 
-        let controller = null; // To handle aborting fetch
-        let showHistoryPopup = true; // Control history popup visibility
+        let controller = null;
+        let showHistoryPopup = true;
 
         window.onload = function() {
             const savedState = localStorage.getItem('sendingState_' + MOVIE_NAME);
@@ -335,7 +264,11 @@
             if (savedState === 'sending' && savedNumber) {
                 document.getElementById('waNumber').value = savedNumber;
                 setSendingUI(true);
-                checkBotTask(savedNumber);
+                
+                // --- වෙනස් කළ කොටස: ආයෙත් රික්වෙස්ට් කරන්නේ නැතුව UI එක විතරක් තියාගෙන තත්පර 40කින් අයින් කරනවා ---
+                setTimeout(() => {
+                    clearSendingUI();
+                }, 40000);
             }
         };
 
@@ -347,18 +280,8 @@
             }
         }
         
-        function useOldNum() { 
-            document.getElementById('waNumber').value = localStorage.getItem('last_num'); 
-            closeM('historyModal'); 
-        }
-
-        // Added this new function to handle closing history modal properly
-        function closeHistoryModal() {
-            showHistoryPopup = false;
-            closeM('historyModal');
-            document.getElementById('waNumber').focus();
-        }
-
+        function useOldNum() { document.getElementById('waNumber').value = localStorage.getItem('last_num'); closeM('historyModal'); }
+        function closeHistoryModal() { showHistoryPopup = false; closeM('historyModal'); document.getElementById('waNumber').focus(); }
         function closeM(id) { document.getElementById(id).style.display = 'none'; }
         
         function triggerPreModal() {
@@ -390,19 +313,14 @@
             const cancelBtn = document.getElementById('cancelBtn');
             cancelBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CANCELLING...';
 
-            if (controller) {
-                controller.abort(); // Cancel the fetch request
-            }
+            if (controller) { controller.abort(); }
 
             try {
                 const response = await fetch(`${BOT_URL}/cancel?number=${number}`, { method: 'GET', keepalive: true });
                 const data = await response.json();
-                
                 let movieNameText = MOVIE_NAME;
                 if(data.movieName) { movieNameText = data.movieName; }
-
                 document.getElementById('cancelMsgText').innerText = `ඔබගේ ඉල්ලීමට අනුව '${movieNameText}' යැවීම සාර්ථකව අවලංගු කරන ලදි.`;
-                
                 clearSendingUI();
                 document.getElementById('cancelPopup').style.display = 'flex';
             } catch (err) {
@@ -448,12 +366,8 @@
                     alert("දෝෂයක් මතු විය: " + (data.error || "Unknown Error"));
                 }
             } catch (err) { 
-                if (err.name === 'AbortError') {
-                    // Fetch was aborted, don't show the red error box
-                    return; 
-                }
+                if (err.name === 'AbortError') { return; }
                 
-                // Show standard error if not an abort
                 clearSendingUI();
                 const btn = document.getElementById('sendBtn');
                 btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> SERVER OFFLINE';
