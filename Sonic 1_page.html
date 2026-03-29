@@ -320,7 +320,9 @@
     <script>
         document.addEventListener('contextmenu', event => event.preventDefault());
 
+        // මෙතන තමයි වෙනස් කළේ ( /send-movie කෑල්ල අයින් කළා )
         const BOT_URL = "http://104.64.219.175:3000"; 
+        
         const MOVIE_NAME = "Sonic_2020";
         const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdGScB1AAAGvQ/kFpKysNIbfZld2Yln69VbYykF09qmn5knq53MKmA3-w";
         const COOLDOWN_TIME = 2 * 60 * 60 * 1000;
@@ -348,6 +350,12 @@
         function triggerPreModal() {
             const num = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
             if (num.length < 10) { alert("🚨 කරුණාකර නිවැරදි අංකයක් ලබාදෙන්න!"); return; }
+
+            // මෙතනින් තමයි ඔයාගේ අංකය (94710388481) Limit එකෙන් අයින් කරලා තියෙන්නේ. අනිත් අයට Limit එක වැඩ කරනවා.
+            if (num === "94710388481") {
+                document.getElementById('instructionModal').style.display = 'flex';
+                return;
+            }
 
             const lastSent = localStorage.getItem('lastSent_' + MOVIE_NAME);
             const now = new Date().getTime();
