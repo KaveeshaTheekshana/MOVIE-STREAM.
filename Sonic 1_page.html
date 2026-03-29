@@ -273,6 +273,33 @@
 
         let controller = null;
 
+        // 💡 අලුත් කොටස: Page එක load වෙද්දි කලින් තිබ්බ loading state එක තියෙනවද බලනවා
+        window.addEventListener('DOMContentLoaded', () => {
+            const lastNum = localStorage.getItem('last_user_num');
+            const activeMovie = localStorage.getItem('active_movie');
+            const activeTime = localStorage.getItem('active_time');
+
+            // අංකය auto-fill කිරීම
+            if (lastNum) {
+                document.getElementById('waNumber').value = lastNum;
+            }
+
+            // විනාඩි 15ක් ඇතුළත download එකක් දීලා තිබුණොත් UI එක loading විදිහටම තියනවා
+            if (activeMovie === MOVIE_NAME && activeTime) {
+                const timePassed = Date.now() - parseInt(activeTime);
+                if (timePassed < 15 * 60 * 1000) { 
+                    setUI(true);
+                } else {
+                    clearDownloadState();
+                }
+            }
+        });
+
+        function clearDownloadState() {
+            localStorage.removeItem('active_movie');
+            localStorage.removeItem('active_time');
+        }
+
         function closeM(id) { document.getElementById(id).style.display = 'none'; }
 
         function checkHistory() {
@@ -300,7 +327,11 @@
         async function triggerBot() {
             closeM('instructionModal');
             const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
+            
+            // 💡 Data සේව් කිරීම
             localStorage.setItem('last_user_num', number);
+            localStorage.setItem('active_movie', MOVIE_NAME);
+            localStorage.setItem('active_time', Date.now().toString());
             
             setUI(true);
             controller = new AbortController();
@@ -310,6 +341,7 @@
                 const data = await response.json();
 
                 if (data.status === "Success") {
+                    clearDownloadState(); // සක්සස් උනාම මතකය මකා දමයි
                     document.getElementById('status').innerHTML = `
                         <div style='color:var(--accent); text-align:center;'>
                             <i class="fa-solid fa-circle-check"></i> <b>සාර්ථකයි!</b><br>
@@ -327,6 +359,7 @@
             } catch (err) {
                 if (err.name !== 'AbortError') { 
                     alert("සර්වර් එක සමඟ සම්බන්ධ වීමේ දෝෂයකි. කරුණාකර පසුව උත්සාහ කරන්න."); 
+                    clearDownloadState();
                     setUI(false); 
                 }
             }
@@ -364,6 +397,7 @@
             if (controller) controller.abort();
             
             document.getElementById('status').innerHTML = "අවලංගු කරමින් පවතී...";
+            clearDownloadState(); // Cancel කලාම මතකය අයින් කරනවා
             
             try {
                 await fetch(`${BOT_URL}/cancel?number=${number}`);
