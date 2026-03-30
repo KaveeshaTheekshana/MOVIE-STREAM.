@@ -136,7 +136,7 @@
         }
         .modal-btn-secondary { 
             background: none; color: var(--text-dim); margin-top: 20px; font-size: 14px; 
-            width: 100%;
+            width: 100%; cursor: pointer; border: none; outline: none;
         }
 
         /* Status & Loading */
@@ -233,7 +233,7 @@
             <p>ඔබ මීට පෙර භාවිතා කළ මෙම අංකයම භාවිතා කරනවාද?</p>
             <h2 id="savedNum" style="color:#fff; margin-bottom:25px;"></h2>
             <button class="modal-btn-confirm" onclick="useOldNum()">ඔව්, එයට එවන්න</button>
-            <button class="modal-btn-secondary" onclick="closeM('historyModal')">වෙනත් අංකයක් භාවිතා කරන්න</button>
+            <button class="modal-btn-secondary" onclick="clearOldNum()">වෙනත් අංකයක් භාවිතා කරන්න</button>
         </div>
     </div>
 
@@ -259,6 +259,16 @@
         </div>
     </div>
 
+    <!-- Success/Error Result Modal එක -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-icon" id="resultIcon"></div>
+            <h3 id="resultTitle"></h3>
+            <p id="resultMessage"></p>
+            <button class="modal-btn-confirm" onclick="closeM('resultModal')">හරි</button>
+        </div>
+    </div>
+
     <footer>
         <div class="dev-tag">Powered by <b>KAVI CINEMA</b></div>
         <a href="https://wa.me/94710388481" class="bug-btn">
@@ -267,24 +277,21 @@
     </footer>
 
     <script>
-        const BOT_URL = "https://movie-stream-bots.onrender.com"; 
+        const BOT_URL = "http://104.64.219.175:10000"; 
         const MOVIE_NAME = "Sonic_the_Hedgehog_2020_4K";
-        const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdEUGSZAAAGCQ/E8x0wPSw6WfTAhYPHyWoaUhuSGJfZGgC76o8bZs4zfA";
+        const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdGScB1AAAGvQ/kFpKysNIbfZld2Yln69VbYykF09qmn5knq53MKmA3-w";
 
         let controller = null;
 
-        // 💡 අලුත් කොටස: Page එක load වෙද්දි කලින් තිබ්බ loading state එක තියෙනවද බලනවා
         window.addEventListener('DOMContentLoaded', () => {
             const lastNum = localStorage.getItem('last_user_num');
             const activeMovie = localStorage.getItem('active_movie');
             const activeTime = localStorage.getItem('active_time');
 
-            // අංකය auto-fill කිරීම
             if (lastNum) {
                 document.getElementById('waNumber').value = lastNum;
             }
 
-            // විනාඩි 15ක් ඇතුළත download එකක් දීලා තිබුණොත් UI එක loading විදිහටම තියනවා
             if (activeMovie === MOVIE_NAME && activeTime) {
                 const timePassed = Date.now() - parseInt(activeTime);
                 if (timePassed < 15 * 60 * 1000) { 
@@ -315,6 +322,13 @@
             closeM('historyModal');
         }
 
+        function clearOldNum() {
+            document.getElementById('waNumber').value = ""; // Input Box එක හිස් කරයි
+            localStorage.removeItem('last_user_num'); // පරණ අංකය මතකයෙන් මකා දමයි
+            closeM('historyModal'); // Modal එක වසා දමයි
+            document.getElementById('waNumber').focus(); // අලුත් අංකයක් ටයිප් කරන්න cursor එක ගෙනෙයි
+        }
+
         function triggerPreModal() {
             const num = document.getElementById('waNumber').value.trim();
             if (num.length < 10) { 
@@ -328,7 +342,6 @@
             closeM('instructionModal');
             const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
             
-            // 💡 Data සේව් කිරීම
             localStorage.setItem('last_user_num', number);
             localStorage.setItem('active_movie', MOVIE_NAME);
             localStorage.setItem('active_time', Date.now().toString());
@@ -341,14 +354,14 @@
                 const data = await response.json();
 
                 if (data.status === "Success") {
-                    clearDownloadState(); // සක්සස් උනාම මතකය මකා දමයි
-                    document.getElementById('status').innerHTML = `
-                        <div style='color:var(--accent); text-align:center;'>
-                            <i class="fa-solid fa-circle-check"></i> <b>සාර්ථකයි!</b><br>
-                            චිත්‍රපටය ඔබගේ WhatsApp වෙත එවනු ඇත.
-                        </div>`;
-                    document.getElementById('sendBtn').style.display = 'none';
-                    document.getElementById('cancelBtn').style.display = 'none';
+                    clearDownloadState(); 
+                    setUI(false); 
+                    
+                    document.getElementById('resultIcon').innerHTML = '<i class="fa-brands fa-whatsapp" style="color:var(--accent)"></i>';
+                    document.getElementById('resultTitle').innerText = "සාර්ථකයි!";
+                    document.getElementById('resultMessage').innerText = "චිත්‍රපටය සාර්ථකව ඔබගේ WhatsApp ගිණුමට යවන ලදි! කරුණාකර ඔබගේ WhatsApp පරීක්ෂා කරන්න. 🍿";
+                    document.getElementById('resultModal').style.display = 'flex';
+                    
                 } else if(data.status === "Queued") {
                     document.getElementById('status').innerHTML = `
                         <div style='color:#f1c40f; text-align:center;'>
@@ -358,9 +371,13 @@
                 }
             } catch (err) {
                 if (err.name !== 'AbortError') { 
-                    alert("සර්වර් එක සමඟ සම්බන්ධ වීමේ දෝෂයකි. කරුණාකර පසුව උත්සාහ කරන්න."); 
                     clearDownloadState();
                     setUI(false); 
+                    
+                    document.getElementById('resultIcon').innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#ff4d4d"></i>';
+                    document.getElementById('resultTitle').innerText = "දෝෂයකි!";
+                    document.getElementById('resultMessage').innerText = "සර්වර් එක සමඟ සම්බන්ධ වීමේ දෝෂයකි. බොට් offline වීමට හෝ ලින්ක් එකේ ගැටළුවක් විය හැක. කරුණාකර පසුව උත්සාහ කරන්න.";
+                    document.getElementById('resultModal').style.display = 'flex';
                 }
             }
         }
@@ -374,16 +391,14 @@
                 status.style.display = 'block';
                 status.innerHTML = `
                     <div class='loading-text'>
-                        <div class='spinner'></div> චිත්‍රපටය සූදානම් කරමින් පවතී...
+                        <div class='spinner'></div> චිත්‍රපටය යවමින් පවතී කරුණාකර රැඳී සිටින්න...
                     </div>`;
                 cancelBtn.style.display = 'flex';
-                sendBtn.disabled = true;
-                sendBtn.style.opacity = '0.5';
+                sendBtn.style.display = 'none'; 
             } else {
                 status.style.display = 'none';
                 cancelBtn.style.display = 'none';
-                sendBtn.disabled = false;
-                sendBtn.style.opacity = '1';
+                sendBtn.style.display = 'flex'; 
             }
         }
 
@@ -397,7 +412,7 @@
             if (controller) controller.abort();
             
             document.getElementById('status').innerHTML = "අවලංගු කරමින් පවතී...";
-            clearDownloadState(); // Cancel කලාම මතකය අයින් කරනවා
+            clearDownloadState(); 
             
             try {
                 await fetch(`${BOT_URL}/cancel?number=${number}`);
