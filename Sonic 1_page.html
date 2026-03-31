@@ -353,20 +353,14 @@
                 const response = await fetch(`${BOT_URL}/send-movie?number=${number}&movieUrl=${encodeURIComponent(MOVIE_LINK)}&movieName=${encodeURIComponent(MOVIE_NAME)}`, { signal: controller.signal });
                 const data = await response.json();
 
-                if (data.status === "Success") {
-                    clearDownloadState(); 
-                    setUI(false); 
-                    
-                    document.getElementById('resultIcon').innerHTML = '<i class="fa-brands fa-whatsapp" style="color:var(--accent)"></i>';
-                    document.getElementById('resultTitle').innerText = "සාර්ථකයි!";
-                    document.getElementById('resultMessage').innerText = "චිත්‍රපටය සාර්ථකව ඔබගේ WhatsApp ගිණුමට යවන ලදි! කරුණාකර ඔබගේ WhatsApp පරීක්ෂා කරන්න. 🍿";
-                    document.getElementById('resultModal').style.display = 'flex';
-                    
-                } else if(data.status === "Queued") {
+                // මෙතැන තමයි මම වෙනස් කළේ (Success එක වෙනුවට Queued එක පෙන්නන්න)
+                if (data.status === "Queued" || data.status === "Success") {
                     document.getElementById('status').innerHTML = `
                         <div style='color:#f1c40f; text-align:center;'>
-                            <i class="fa-solid fa-clock"></i> <b>ඔබ පෝලිමට එක්විය (#${data.position})</b><br>
-                            කරුණාකර රැඳී සිටින්න.
+                            <i class="fa-solid fa-clock"></i> <b>ඉල්ලීම සාර්ථකයි! (ස්ථානය: #${data.position})</b><br>
+                            <span style="color:#25D366; font-size:14px; margin-top:10px; display:inline-block;">
+                                <i class="fa-brands fa-whatsapp"></i> බොට් විසින් චිත්‍රපටය WhatsApp වෙත එවනු ඇත. කරුණාකර WhatsApp පරීක්ෂා කරන්න.
+                            </span>
                         </div>`;
                 }
             } catch (err) {
