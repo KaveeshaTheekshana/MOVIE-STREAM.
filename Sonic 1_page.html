@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonic the Hedgehog (2020) | Movie Stream </title>
+    <title>Sonic the Hedgehog (2020) | Movie Stream</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ... (ඔබගේ පැරණි CSS සියල්ලම එලෙසම තබා ගන්න) ... */
         :root { --primary: #e50914; --accent: #25D366; --bg: #080808; --card-bg: rgba(25, 25, 25, 0.7); --border: rgba(255, 255, 255, 0.1); --text-main: #ffffff; --text-dim: #b3b3b3; }
         * { box-sizing: border-box; transition: all 0.3s ease; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow-x: hidden; }
@@ -60,6 +59,28 @@
         .bug-btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 25px; background: #222; border-radius: 50px; text-decoration: none; color: #fff; font-size: 13px; font-weight: 600; border: 1px solid var(--border); }
         .bug-btn:hover { background: var(--primary); border-color: var(--primary); }
         @media (max-width: 850px) { .movie-flex { flex-direction: column; } .details h1 { font-size: 2.8rem; text-align: center; } .poster { max-width: 400px; margin: 0 auto; } .meta-grid { justify-content: center; } .details { text-align: center; } .specs-grid { text-align: left; } }
+        
+        /* 🔴 අලුත්: VIP Neo-Light Modal එක සඳහා Styles */
+        .vip-modal-content {
+            background: #0f0f0f; padding: 40px; border-radius: 25px; text-align: center;
+            max-width: 480px; width: 90%; border: 2px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.1);
+            animation: neonPulse 1.5s infinite alternate;
+        }
+        @keyframes neonPulse {
+            from { box-shadow: 0 0 10px rgba(255,215,0,0.3), inset 0 0 10px rgba(255,215,0,0.1); border-color: #ccaa00; }
+            to { box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 50px rgba(255,165,0,0.5), inset 0 0 20px rgba(255,215,0,0.4); border-color: #ffe600; }
+        }
+        .vip-icon { font-size: 65px; color: #ffd700; text-shadow: 0 0 25px #ffd700; margin-bottom: 20px; animation: floatIcon 3s ease-in-out infinite; }
+        @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        .vip-title { font-size: 26px; color: #ffd700; font-family: 'Poppins', sans-serif; margin-bottom: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .vip-text { color: #e0e0e0; line-height: 1.8; margin-bottom: 30px; font-size: 15px; }
+        .vip-btn {
+            width: 100%; padding: 18px; background: linear-gradient(45deg, #ffcc00, #ff9900);
+            color: #000; border-radius: 12px; font-weight: 800; font-size: 17px;
+            border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 165, 0, 0.4); transition: 0.3s;
+        }
+        .vip-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(255, 165, 0, 0.6); }
     </style>
 </head>
 <body>
@@ -127,6 +148,7 @@
         </div>
     </div>
 
+    <!-- සාමාන්‍ය Instruction Modal -->
     <div class="modal" id="instructionModal">
         <div class="modal-content">
             <div class="modal-icon"><i class="fa-solid fa-film"></i></div>
@@ -134,6 +156,20 @@
             <p>ඔබගේ අංකය නිවැරදි නම් චිත්‍රපටය WhatsApp ගිණුමට පැමිණෙනු ඇත. මෙය ස්වයංක්‍රීය ක්‍රියාවලියක් බැවින් විනාඩි කිහිපයක් රැඳී සිටින්න.</p>
             <button class="modal-btn-confirm" onclick="triggerBot()">හරි, එවන්න!</button>
             <button class="modal-btn-secondary" onclick="closeM('instructionModal')">පසුපසට</button>
+        </div>
+    </div>
+
+    <!-- 🔴 අලුත්: VIP Neo-Light Animation Modal එක -->
+    <div class="modal" id="vipModal">
+        <div class="vip-modal-content">
+            <div class="vip-icon"><i class="fa-solid fa-crown"></i></div>
+            <div class="vip-title">VIP Access Granted!</div>
+            <p class="vip-text">
+                Developer විසින් ඔබගේ අංකය <b>VIP Category</b> එකට ඇතුළත් කර ඇති බැවින්, ඔබ පෝලිමේ සිටීම අවශ්‍ය නොවේ!<br><br>
+                සර්වර් එකේ උපරිම කාර්යක්ෂමතාවයෙන් චිත්‍රපටය තත්පර කිහිපයකින් ඔබ වෙත එවනු ඇත. 🚀
+            </p>
+            <button class="vip-btn" onclick="triggerBot()">සුපිරි! දැන්ම එවන්න</button>
+            <button class="modal-btn-secondary" onclick="closeM('vipModal')">පසුපසට</button>
         </div>
     </div>
 
@@ -161,11 +197,15 @@
         <a href="https://wa.me/94710388481" class="bug-btn"><i class="fa-solid fa-bug"></i> Report Bugs & Errors</a>
     </footer>
 
-    <!-- අලුත් කරන ලද Script කොටස -->
+    <!-- Script කොටස -->
     <script>
         const BOT_URL = "https://api.moviestream.lat";
-        const MOVIE_NAME = "Sonic_the_Hedgehog_2020_4K";
+        const MOVIE_NAME = "Sonic_the_Hedgehog_2020_4K"; // වෙනස් ෆිල්ම් එකකදී මේක වෙනස් කරන්න
         const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdGScB1AAAGvQ/kFpKysNIbfZld2Yln69VbYykF09qmn5knq53MKmA3-w";
+
+        const storageKey = 'active_movie_' + MOVIE_NAME;
+        
+        const VIP_NUMBERS = ["94710388481", "94702409932"];
 
         let controller = null;
         let pollingInterval = null; 
@@ -174,14 +214,13 @@
             const lastNum = localStorage.getItem('last_user_num');
             if (lastNum) {
                 document.getElementById('waNumber').value = lastNum;
-                // පේජ් එකට ආව ගමන් අංකයක් සේව් වෙලා තියෙනව නම් බොට්ගෙන් Status එක අහනවා
                 checkCurrentStatus(lastNum);
             }
         });
 
         function clearDownloadState() {
             if (pollingInterval) clearInterval(pollingInterval);
-            localStorage.removeItem('active_movie');
+            localStorage.removeItem(storageKey); 
         }
 
         function closeM(id) { document.getElementById(id).style.display = 'none'; }
@@ -208,17 +247,35 @@
             document.getElementById('waNumber').focus(); 
         }
 
+        // 🔴 අලුත්: අංකය VIP ද කියා බැලීමට Helper Function එකක්
+        function isVipNumber(num) {
+            if (!num) return false;
+            let cleanNum = num.replace(/[^0-9]/g, '');
+            let formatted = cleanNum;
+            if (cleanNum.startsWith('0')) formatted = '94' + cleanNum.slice(1);
+            return VIP_NUMBERS.includes(formatted) || VIP_NUMBERS.includes(cleanNum);
+        }
+
         function triggerPreModal() {
             const num = document.getElementById('waNumber').value.trim();
             if (num.length < 10) { alert("කරුණාකර නිවැරදි WhatsApp අංකයක් ඇතුළත් කරන්න!"); return; }
-            document.getElementById('instructionModal').style.display = 'flex';
+            
+            // 🔴 අලුත්: අංකය අනුව පෙන්වන Modal එක තීරණය කිරීම
+            if (isVipNumber(num)) {
+                document.getElementById('vipModal').style.display = 'flex';
+            } else {
+                document.getElementById('instructionModal').style.display = 'flex';
+            }
         }
 
         async function triggerBot() {
+            // Modals දෙකම close කරනවා (මොකෙන් confirm කරත්)
             closeM('instructionModal');
+            closeM('vipModal');
+
             const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
             localStorage.setItem('last_user_num', number);
-            localStorage.setItem('active_movie', MOVIE_NAME);
+            localStorage.setItem(storageKey, "true"); 
             
             setUI(true);
             controller = new AbortController();
@@ -227,7 +284,7 @@
                 const response = await fetch(`${BOT_URL}/send-movie?number=${number}&movieUrl=${encodeURIComponent(MOVIE_LINK)}&movieName=${encodeURIComponent(MOVIE_NAME)}`, { signal: controller.signal });
                 const data = await response.json();
 
-                if (data.status === "Queued" || data.status === "Success") {
+                if (data.status === "Queued" || data.status === "Success" || data.status === "Processing") {
                     updateStatusDisplay(data.status, data.position);
                     startPolling(number);
                 }
@@ -236,28 +293,24 @@
             }
         }
 
-        // Page එක Load වෙනකොටම අගය පරීක්ෂා කිරීම
         async function checkCurrentStatus(number) {
-            const activeMovie = localStorage.getItem('active_movie');
-            if (activeMovie !== MOVIE_NAME) return;
+            const isThisMovieActive = localStorage.getItem(storageKey); 
+            if (!isThisMovieActive) return;
 
             try {
-                const res = await fetch(`${BOT_URL}/check-status?number=${number}`);
+                const res = await fetch(`${BOT_URL}/check-status?number=${number}&movieName=${encodeURIComponent(MOVIE_NAME)}`);
                 const data = await res.json();
 
                 if (data.status === "Queued" || data.status === "Processing") {
                     setUI(true);
                     updateStatusDisplay(data.status, data.position);
-                    startPolling(number); // නැවතුණු Polling එක ආයේ පටන් ගන්නවා
+                    startPolling(number); 
                 } else if (data.status === "Success") {
                     clearDownloadState();
-                    // සාර්ථකයි නම් මුකුත් නොපෙන්වා ඉන්නවා (මොකද ෆිල්ම් එක ගිහින් ඉවරයි)
                 } else {
                     clearDownloadState();
                 }
-            } catch (e) {
-                // සර්වර් එකට connect වෙන්න බැරි නම් මුකුත් කරන්නේ නෑ
-            }
+            } catch (e) {}
         }
 
         function startPolling(number) {
@@ -265,7 +318,7 @@
             
             pollingInterval = setInterval(async () => {
                 try {
-                    const res = await fetch(`${BOT_URL}/check-status?number=${number}`);
+                    const res = await fetch(`${BOT_URL}/check-status?number=${number}&movieName=${encodeURIComponent(MOVIE_NAME)}`);
                     const data = await res.json();
 
                     if (data.status === "Success") {
@@ -283,10 +336,22 @@
             }, 10000); 
         }
 
-        // Status පෙන්වන කොටස
         function updateStatusDisplay(status, position) {
             const statusDiv = document.getElementById('status');
-            
+            const currentNum = localStorage.getItem('last_user_num');
+
+            if (isVipNumber(currentNum)) {
+                statusDiv.innerHTML = `
+                    <div style='color:#ffd700; text-align:center;'>
+                        <i class="fa-solid fa-crown"></i> <b style="font-size:16px;">ADMIN / VIP ප්‍රවේශය</b><br>
+                        <span style="color:#25D366; font-size:14px; margin-top:10px; display:inline-block;">
+                            <div class='spinner' style="display:inline-block; vertical-align:middle; width:15px; height:15px; margin-right:5px; border-top-color:#ffd700;"></div>
+                            ඔබට පෝලිමක් අදාළ නොවේ! දැන්ම යවමින් පවතී...
+                        </span>
+                    </div>`;
+                return;
+            }
+
             if (status === "Queued") {
                 statusDiv.innerHTML = `
                     <div style='color:#f1c40f; text-align:center;'>
@@ -351,7 +416,7 @@
             document.getElementById('status').innerHTML = "❌ අවලංගු කරමින් පවතී...";
             
             try {
-                await fetch(`${BOT_URL}/cancel?number=${number}`);
+                await fetch(`${BOT_URL}/cancel?number=${number}&movieName=${encodeURIComponent(MOVIE_NAME)}`);
             } catch(e) {}
 
             location.reload(); 
