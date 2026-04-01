@@ -41,6 +41,13 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         input:focus { outline: none; border-color: #e50914; box-shadow: 0 0 15px rgba(229, 9, 20, 0.3); }
+
+        /* Neon Popup Style */
+        .neon-border {
+            box-shadow: 0 0 20px rgba(0, 163, 255, 0.5), inset 0 0 10px rgba(0, 163, 255, 0.2);
+            border: 1px solid rgba(0, 163, 255, 0.6);
+        }
+        #success_popup_modal { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;" class="antialiased selection:bg-primary selection:text-white">
@@ -176,6 +183,30 @@
         </div>
     </div>
 
+    <div id="success_popup_modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[110] items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="glass-card neon-border w-[95%] max-w-sm p-8 rounded-3xl text-center transform scale-95 transition-transform duration-300" id="success_popup_content">
+            <div class="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-500/50 shadow-[0_0_20px_rgba(0,163,255,0.4)]">
+                <i class="fa-solid fa-paper-plane text-3xl text-blue-400 animate-bounce"></i>
+            </div>
+            <h3 class="text-2xl font-black mb-3 text-white tracking-tight">පණිවිඩය ලැබුණා! 🚀</h3>
+            <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                ඔබේ ඉල්ලීම අපේ Server එකට සාර්ථකව ලැබුණා. පෝලිමේ ඔබේ වාරය පැමිණි වහාම චිත්‍රපටය WhatsApp වෙත ලැබෙනු ඇත. <br><br>
+                <span class="text-blue-400 font-semibold italic">දැන් ඔබට මෙම පිටුවෙන් ඉවත් විය හැක.</span>
+            </p>
+            
+            <div class="bg-white/5 p-4 rounded-2xl border border-white/10 mb-6">
+                <p class="text-[10px] uppercase tracking-widest text-gray-500 mb-1">යම් ගැටළුවක් ඇත්නම්</p>
+                <a href="https://wa.me/94710388481" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-headset"></i> Contact Developer
+                </a>
+            </div>
+
+            <button onclick="closeSuccessPopup()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg transition duration-300 uppercase tracking-widest text-sm">
+                OK
+            </button>
+        </div>
+    </div>
+
     <footer class="glass-nav py-5 md:py-6 mt-8 md:mt-10 border-t border-white/5 relative z-10">
         <div class="text-center text-[10px] sm:text-xs md:text-sm font-mono text-gray-400 tracking-widest px-4 leading-relaxed">
             <i class="fa-solid fa-code text-primary"></i> Developer and System Maintained By <br class="sm:hidden">
@@ -195,7 +226,7 @@
             <div class="flex flex-col-reverse sm:flex-row gap-3">
                 <button onclick="closeCinesubzModal()" class="w-full sm:w-1/2 bg-white/10 hover:bg-white/20 py-3 rounded-xl font-semibold transition text-sm">පසුවට</button>
                 <a href="https://cinesubz.net/" target="_blank" onclick="closeCinesubzModal()" class="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-semibold transition shadow-lg shadow-blue-500/30 text-sm flex items-center justify-center gap-2">
-                    එකඟයි <i class="fa-solid fa-check"></i>
+                     එකඟයි <i class="fa-solid fa-check"></i>
                 </a>
             </div>
         </div>
@@ -210,7 +241,6 @@
         const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdGScB1AAAGvQ/kFpKysNIbfZld2Yln69VbYykF09qmn5knq53MKmA3-w";
         const VIP_NUMBERS = ["94710388481", "94702409932"];
 
-        // ✅ මේ film එකට අදාළ Unique Keys
         const DL_STATE_KEY = 'dl_state_' + MOVIE_NAME.replace(/[^a-zA-Z0-9]/g, '_');
         const TASK_ID_KEY = 'task_id_' + MOVIE_NAME.replace(/[^a-zA-Z0-9]/g, '_');
 
@@ -313,6 +343,23 @@
             checkVIPUI(currentNumber);
             switchState('section_process');
             startDownload();
+            showSuccessPopup();
+        }
+
+        function showSuccessPopup() {
+            const sModal = document.getElementById('success_popup_modal');
+            sModal.style.display = 'flex';
+            setTimeout(() => { 
+                sModal.classList.remove('opacity-0'); 
+                document.getElementById('success_popup_content').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeSuccessPopup() {
+            const sModal = document.getElementById('success_popup_modal');
+            sModal.classList.add('opacity-0');
+            document.getElementById('success_popup_content').classList.add('scale-95');
+            setTimeout(() => { sModal.style.display = 'none'; }, 300);
         }
 
         async function startDownload() {
