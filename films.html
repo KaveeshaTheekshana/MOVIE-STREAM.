@@ -15,7 +15,7 @@
             --card-bg: #121212;
             --glass-border: rgba(255, 255, 255, 0.08);
             --btn-glow: rgba(255, 0, 60, 0.5);
-            --primary: #e50914; /* For footer compatibility */
+            --primary: #e50914; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Noto Sans Sinhala', sans-serif; }
@@ -30,13 +30,11 @@
             overflow-x: hidden;
         }
 
-        /* --- Header & Logo Animation --- */
+        /* --- Header & Logo --- */
         header { padding: 30px 6%; position: sticky; top: 0; z-index: 2000; background: rgba(5,5,5,0.8); backdrop-filter: blur(15px); }
         .nav-content { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 
         .logo { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
-        
-        /* Logo Animation & Link */
         .logo a {
             text-decoration: none;
             background: linear-gradient(90deg, #fff, var(--accent), #fff);
@@ -46,10 +44,9 @@
             animation: shine 3s linear infinite;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
+        @keyframes shine { to { background-position: 200% center; } }
 
+        /* --- Search & Suggestions --- */
         .search-wrapper { position: relative; width: 100%; max-width: 450px; }
         .search-container { 
             display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); 
@@ -62,17 +59,44 @@
         .clear-search { font-size: 1.2rem; cursor: pointer; color: #666; margin-right: 10px; display: none; }
         .btn-search-now { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 700; white-space: nowrap; }
 
+        .suggestions-box {
+            position: absolute; top: 110%; left: 0; right: 0; background: #121212; 
+            border: 1px solid var(--glass-border); border-radius: 12px; z-index: 3000;
+            display: none; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .suggestion-item { padding: 12px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .suggestion-item:hover { background: var(--accent); }
+
+        /* --- Genre Selection Buttons --- */
+        .genre-container {
+            display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; flex-wrap: wrap;
+        }
+        .genre-btn {
+            padding: 10px 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            border-radius: 50px; color: #fff; cursor: pointer; font-weight: 700; font-size: 0.85rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-transform: uppercase;
+        }
+        .genre-btn:hover, .genre-btn.active {
+            background: var(--accent); border-color: var(--accent); transform: scale(1.1);
+            box-shadow: 0 0 20px var(--btn-glow);
+        }
+
         /* --- Main Content --- */
         main { padding: 40px 6%; transition: 0.5s; flex-grow: 1; }
-        .film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; transition: gap 0.5s ease; }
-        .film-grid.searching-gap { gap: 70px 40px; }
+
+        /* PC Screen එකේ හරහට 5ක් පෙන්වීමට මම මේක Update කළා */
+        .film-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 25px; 
+            transition: all 0.5s ease; 
+        }
 
         /* --- FILM CARD --- */
         .film-card {
             background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border);
             overflow: hidden; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); position: relative;
         }
-
         .film-card:hover { transform: translateY(-10px); border-color: rgba(255, 0, 60, 0.5); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
         .poster { width: 100%; aspect-ratio: 2/3; overflow: hidden; position: relative; }
         .poster img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
@@ -88,7 +112,6 @@
         }
         .meta-info .year { color: var(--accent); border-color: rgba(255, 0, 60, 0.2); }
 
-        /* --- CLEAN DOWNLOAD BUTTON --- */
         .btn-download-normal {
             display: flex; align-items: center; justify-content: center;
             width: 100%; padding: 12px; background: rgba(255,255,255,0.05);
@@ -97,75 +120,66 @@
         }
         .btn-download-normal:hover { background: var(--accent); box-shadow: 0 5px 20px var(--btn-glow); border-color: var(--accent); }
 
-        /* --- SEARCH EFFECTS --- */
+        /* --- Effects --- */
         .is-blur { filter: blur(15px); opacity: 0.1; transform: scale(0.85); pointer-events: none; }
         .highlight { transform: scale(1.1) !important; border-color: var(--accent); z-index: 100; box-shadow: 0 0 50px rgba(255, 0, 60, 0.4); }
 
-        /* 🔴 NEW: Footer Styles (From previous page) */
-        footer {
-            background: #050505;
-            border-top: 1px solid rgba(0, 229, 255, 0.2);
-            box-shadow: 0 -5px 25px rgba(0, 229, 255, 0.05);
-            padding: 40px 20px;
-            text-align: center;
-            width: 100%;
-            margin-top: auto;
+        /* Responsive Settings */
+        @media (max-width: 1200px) {
+            .film-grid { grid-template-columns: repeat(4, 1fr); } 
         }
 
-        .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        
-        .footer-credits { font-size: clamp(12px, 2vw, 14px); color: #888; line-height: 1.8; }
-        .footer-credits a { color: #00e5ff; text-decoration: none; font-weight: 900; font-size: clamp(14px, 2.5vw, 16px); text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); transition: 0.3s; cursor: pointer; padding: 0 5px; }
-        .footer-credits a:hover { color: #fff; text-shadow: 0 0 20px #00e5ff, 0 0 30px #00e5ff; }
-        
-        .footer-dev { font-size: clamp(12px, 2vw, 14px); letter-spacing: 1px; color: #aaa; }
-        .footer-dev b { color: var(--primary); font-weight: 900; letter-spacing: 2px; }
-        
-        .bug-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 25px; background: rgba(37, 211, 102, 0.1); border-radius: 50px; text-decoration: none; color: #25D366; font-size: clamp(12px, 2vw, 14px); font-weight: 700; border: 1px solid rgba(37, 211, 102, 0.3); transition: 0.3s; box-shadow: 0 0 15px rgba(37, 211, 102, 0.1); width: 100%; max-width: 300px; }
-        .bug-btn:hover { background: #25D366; color: #000; box-shadow: 0 0 25px rgba(37, 211, 102, 0.6); transform: translateY(-2px); }
+        @media (max-width: 992px) {
+            .film-grid { grid-template-columns: repeat(3, 1fr); } 
+        }
 
-        /* 🔴 100% Mobile Optimization */
         @media (max-width: 768px) {
-            header { padding: 15px 5%; }
-            .nav-content { flex-direction: column; gap: 15px; }
-            .search-wrapper { width: 100%; max-width: 100%; }
-            .logo { font-size: 1.5rem; }
-            .btn-search-now { padding: 8px 12px; font-size: 0.85rem; }
-            main { padding: 20px 5%; }
-            .film-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-            .card-details { padding: 12px; gap: 10px; }
-            .card-details h3 { font-size: 0.95rem; }
-            .meta-info span { font-size: 0.6rem; padding: 2px 6px; }
-            .btn-download-normal { padding: 10px; font-size: 0.85rem; }
+            .film-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; } 
+            .genre-btn { padding: 8px 15px; font-size: 0.7rem; }
         }
 
-        @media (max-width: 400px) {
-            .film-grid { grid-template-columns: 1fr; gap: 20px; max-width: 300px; margin: 0 auto; }
+        @media (max-width: 480px) {
+            .film-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } 
         }
+
+        /* --- Footer --- */
+        footer { background: #050505; border-top: 1px solid rgba(0, 229, 255, 0.2); padding: 40px 20px; text-align: center; margin-top: auto; }
+        .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .footer-credits { font-size: 14px; color: #888; line-height: 1.8; }
+        .footer-credits a { color: #00e5ff; text-decoration: none; font-weight: 900; }
+        .footer-dev { font-size: 14px; color: #aaa; }
+        .footer-dev b { color: var(--primary); font-weight: 900; }
+        .bug-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 25px; background: rgba(37, 211, 102, 0.1); border-radius: 50px; text-decoration: none; color: #25D366; font-weight: 700; border: 1px solid rgba(37, 211, 102, 0.3); transition: 0.3s; }
+        .bug-btn:hover { background: #25D366; color: #000; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="nav-content">
-            <div class="logo">
-                <a href="index.html">MOVIE STREAM</a>
-            </div>
-            
+            <div class="logo"><a href="index.html">MOVIE STREAM</a></div>
             <div class="search-wrapper">
                 <div class="search-container">
                     <input type="text" id="movieSearch" placeholder="Search movies..." autocomplete="off">
                     <span class="clear-search" id="clearBtn">&times;</span>
                     <button class="btn-search-now" id="searchBtn">SEARCH</button>
                 </div>
+                <div class="suggestions-box" id="suggestionBox"></div>
             </div>
         </div>
     </header>
 
-    <main id="mainArea">
+    <main>
+        <div class="genre-container">
+            <button class="genre-btn active" data-genre="all">All Movies</button>
+            <button class="genre-btn" data-genre="action">Action</button>
+            <button class="genre-btn" data-genre="horror">Horror</button>
+            <button class="genre-btn" data-genre="romantic">Romantic</button>
+        </div>
+
         <div class="film-grid" id="filmGrid">
             
-            <div class="film-card" data-title="Sonic the Hedgehog">
+            <div class="film-card" data-title="Sonic the Hedgehog" data-genre="action">
                 <div class="poster"><img src="https://cinesubz.net/wp-content/uploads/2021/11/aQvJ5WPzZgYVDrxLX4R6cLJCEaQ.jpg" alt="Sonic"></div>
                 <div class="card-details">
                     <h3>Sonic the Hedgehog</h3>
@@ -174,7 +188,7 @@
                 </div>
             </div>
 
-            <div class="film-card" data-title="Scream 7">
+            <div class="film-card" data-title="Scream 7" data-genre="horror">
                 <div class="poster"><img src="https://cinesubz.net/wp-content/uploads/2026/03/jjyuk0edLiW8vOSnlfwWCCLpbh5.jpg" alt="Scream"></div>
                 <div class="card-details">
                     <h3>Scream 7</h3>
@@ -183,7 +197,7 @@
                 </div>
             </div>
 
-            <div class="film-card" data-title="Lucky Superstar">
+            <div class="film-card" data-title="Lucky Superstar" data-genre="romantic">
                 <div class="poster"><img src="https://cinesubz.net/wp-content/uploads/2026/02/fb5ao0wON2Dq3atOy3rikyL8IsP.jpg" alt="Lucky"></div>
                 <div class="card-details">
                     <h3>Lucky Superstar</h3>
@@ -192,23 +206,72 @@
                 </div>
             </div>
 
+            <div class="film-card" data-title="With Love" data-genre="romantic">
+                <div class="poster"><img src="https://i.pinimg.com/736x/8b/78/14/8b7814222bae854432b9b8b50da292b3.jpg" alt="With Love"></div>
+                <div class="card-details">
+                    <h3>With Love (2026)</h3>
+                    <div class="meta-info"><span class="year">2026</span><span>ROMANTIC</span><span>Sinhala Sub</span></div>
+                    <a href="With_Love_(2026)_page copy.html" class="btn-download-normal">Download</a>
+                </div>
+            </div>
+
+            <div class="film-card" data-title="Premalu" data-genre="romantic">
+                <div class="poster"><img src="https://i.pinimg.com/736x/18/3e/9d/183e9d1a8b3204a628a01a98756d0b57.jpg" alt="Premalu"></div>
+                <div class="card-details">
+                    <h3>Premalu (2024)</h3>
+                    <div class="meta-info"><span class="year">2024</span><span>Romance</span><span>Sinhala Sub</span></div>
+                    <a href="Premalu_page copy.html" class="btn-download-normal">Download</a>
+                </div>
+            </div>
+
+
+
+              <div class="film-card" data-title="Avatar: Fire and Ash" data-genre="Action">
+                <div class="poster"><img src="https://i.pinimg.com/736x/71/3a/ab/713aab78d2a2e2e60228e3c9bb7e9687.jpg" alt="Avatar: Fire and Ash"></div>
+                <div class="card-details">
+                    <h3>Avatar: Fire and Ash </h3>
+                    <div class="meta-info"><span class="year">2025</span><span>Adventure</span><span>English</span><span>English</span><span>Fantasy</span><span>Science Fiction</span><span>Sinhala Sub</span></div>
+                    <a href="Avatar_page copy.html" class="btn-download-normal">Download</a>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
     </main>
 
-    <!-- 🔴 NEW: Footer Area -->
     <footer>
         <div class="footer-content">
-            <div class="footer-dev">
-                System Developed & Maintained by <b>Kaveesha Theekshana</b>
-            </div>
-            
-            <div class="footer-credits">
-                චිත්‍රපට සහ උපසිරැසි ලබාගැනීමේ පූර්ණ අයිතිය සහ ස්තූතිය <br>
+            <div class="footer-dev">System Developed & Maintained by <b>Kaveesha Theekshana</b></div>
+            <div class="footer-credits">චිත්‍රපට සහ උපසිරැසි ලබාගැනීමේ පූර්ණ අයිතිය සහ ස්තූතිය <br>
                 <a href="https://cinesubz.net/" target="_blank">CineSubz.net</a> වෙබ් අඩවිය සතු වේ.
             </div>
-
-            <a href="https://wa.me/94710388481?text=ආයුබෝවන් Developer, MOVIE STREAM වෙබ් අඩවියේ දෝෂයක් මා දුටුවා. කරුණාකර සහාය වන්න." target="_blank" class="bug-btn">
-                <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Report Bugs & Errors
+            <a href="https://wa.me/94710388481?text=Hi" target="_blank" class="bug-btn">
+                <i class="fa-brands fa-whatsapp"></i> Report Bugs & Errors
             </a>
         </div>
     </footer>
@@ -216,27 +279,61 @@
     <script>
         const searchInput = document.getElementById('movieSearch');
         const clearBtn = document.getElementById('clearBtn');
-        const filmGrid = document.getElementById('filmGrid');
+        const suggestionBox = document.getElementById('suggestionBox');
         const filmCards = document.querySelectorAll('.film-card');
+        const genreBtns = document.querySelectorAll('.genre-btn');
 
-        function resetAll() {
-            searchInput.value = "";
-            clearBtn.style.display = "none";
-            filmGrid.classList.remove('searching-gap');
-            filmCards.forEach(card => {
-                card.classList.remove('is-blur', 'highlight');
-                card.style.display = "block";
+        // Search Suggestions Logic
+        searchInput.addEventListener('input', () => {
+            const val = searchInput.value.toLowerCase().trim();
+            suggestionBox.innerHTML = '';
+            if (val.length > 0) {
+                const matches = Array.from(filmCards).filter(c => c.dataset.title.toLowerCase().includes(val));
+                if (matches.length > 0) {
+                    suggestionBox.style.display = 'block';
+                    matches.forEach(m => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.innerText = m.dataset.title;
+                        div.onclick = () => {
+                            searchInput.value = m.dataset.title;
+                            suggestionBox.style.display = 'none';
+                            performSearch();
+                        };
+                        suggestionBox.appendChild(div);
+                    });
+                }
+            } else {
+                suggestionBox.style.display = 'none';
+            }
+            performSearch();
+        });
+
+        // Genre Filter Logic
+        genreBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                genreBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const genre = btn.dataset.genre;
+                
+                filmCards.forEach(card => {
+                    if (genre === 'all' || card.dataset.genre === genre) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
-        }
+        });
 
         function performSearch() {
             const query = searchInput.value.toLowerCase().trim();
-            if (!query) { resetAll(); return; }
-            clearBtn.style.display = "block";
-            filmGrid.classList.add('searching-gap');
+            clearBtn.style.display = query ? "block" : "none";
             filmCards.forEach(card => {
                 const title = card.dataset.title.toLowerCase();
-                if (title.includes(query)) {
+                if (!query) {
+                    card.classList.remove('is-blur', 'highlight');
+                } else if (title.includes(query)) {
                     card.classList.remove('is-blur');
                     card.classList.add('highlight');
                 } else {
@@ -246,9 +343,15 @@
             });
         }
 
-        searchInput.addEventListener('input', performSearch);
-        clearBtn.addEventListener('click', resetAll);
-        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            suggestionBox.style.display = 'none';
+            performSearch();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-wrapper')) suggestionBox.style.display = 'none';
+        });
     </script>
 </body>
 </html>
