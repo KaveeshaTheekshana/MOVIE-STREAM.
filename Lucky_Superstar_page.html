@@ -1,499 +1,474 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="si" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky the Superstar (2026)  | Movie Stream</title>
+    <title>Lucky Superstar | Movie Stream</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Noto+Sans+Sinhala:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'Noto Sans Sinhala', 'sans-serif'] },
+                    colors: { primary: '#e50914', accent: '#25D366', gold: '#FFD700', dark: '#0a0a0a' }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root { --primary: #e50914; --accent: #25D366; --bg: #080808; --card-bg: #141414; --text-main: #ffffff; --text-dim: #b3b3b3; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #0a0a0a; color: white; overflow-x: hidden; }
+        .glass-card { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-nav { background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent); }
+        .gradient-text { background: linear-gradient(45deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 55vh; object-fit: cover; z-index: -1; opacity: 0.35; mask-image: linear-gradient(to bottom, black 30%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%); }
         
-        html, body { background-color: var(--bg); color: white; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; margin: 0; padding: 0; }
-
-        /* Header Style & Back Button */
-        header { padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; z-index: 1000; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
-        .logo { font-size: 28px; font-weight: 900; color: var(--primary); text-decoration: none; transition: 0.3s; }
-        .logo:hover { text-shadow: 0 0 15px var(--primary); }
+        @keyframes wa-pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+        .wa-btn { animation: wa-pulse 2s infinite; }
         
-        .header-left { display: flex; align-items: center; gap: 20px; }
-        .back-btn { color: #fff; font-size: 26px; text-decoration: none; transition: 0.3s; animation: pulseLeft 1.5s infinite; }
-        .back-btn:hover { color: var(--primary); text-shadow: 0 0 15px var(--primary); transform: scale(1.1); }
-        @keyframes pulseLeft { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-6px); } }
-
-        /* 🔴 Responsive Hero Section */
-        .hero { 
-            min-height: 100vh; width: 100%; 
-            background: linear-gradient(to right, #000 15%, transparent 60%), linear-gradient(to top, #080808 10%, transparent 40%), url('https://img1.hotstarext.com/image/upload/f_auto/sources/r1/cms/prod/6303/1771413756303-i'); 
-            background-size: cover; background-position: center; 
-            display: flex; align-items: center; padding: 120px 50px 50px 50px; /* Padding for mobile optimization */
-            animation: fadeIn 1.5s ease-out; 
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        .float-anim { animation: float 4s ease-in-out infinite; }
         
-        .hero-content { max-width: 650px; animation: slideUp 1s ease-out; display: flex; flex-direction: column; gap: 15px; } /* Auto spacing gap added */
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .ui-section { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .ui-section.active { display: block; opacity: 1; animation: fadeIn 0.5s forwards; }
         
-        .movie-title { font-size: clamp(40px, 6vw, 80px); font-weight: 900; line-height: 1.1; margin-bottom: 10px; word-wrap: break-word; } /* Fluid text size */
-        
-        .meta-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; } /* Wrap for long tags */
-        .tag { border: 1px solid rgba(255,255,255,0.4); padding: 4px 12px; font-size: 14px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-        
-        .synopsis { font-size: clamp(14px, 2vw, 18px); color: #ccc; line-height: 1.6; margin-bottom: 20px; } /* Fluid text size */
-
-        /* Input & Buttons */
-        .action-box { background: rgba(20, 20, 20, 0.7); padding: 30px; border-radius: 10px; backdrop-filter: blur(10px); border-left: 5px solid var(--primary); display: flex; flex-direction: column; gap: 15px; } /* Flex gap for spacing */
-        input { width: 100%; padding: 15px; background: #333; border: none; border-radius: 5px; color: white; font-size: 16px; outline: none; }
-        input:focus { border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
-        
-        .btn-main { background-color: var(--primary); color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 18px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; text-align: center; }
-        .btn-main:hover { transform: scale(1.02); background: #b20710; box-shadow: 0 10px 20px rgba(229, 9, 20, 0.5); }
-        
-        .btn-cancel { 
-            background: rgba(255, 77, 77, 0.1); color: #ff4d4d; padding: 15px 30px; border: 1px solid rgba(255, 77, 77, 0.4); 
-            border-radius: 5px; font-size: 18px; font-weight: 700; cursor: pointer; width: 100%; 
-            display: none; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
-            animation: redPulseBtn 2s infinite alternate; text-align: center;
-        }
-        @keyframes redPulseBtn { from { box-shadow: 0 0 5px rgba(255, 77, 77, 0.2); } to { box-shadow: 0 0 15px rgba(255, 77, 77, 0.5); } }
-        .btn-cancel:hover { background: #ff4d4d; color: #fff; transform: scale(1.02); box-shadow: 0 5px 20px rgba(255, 77, 77, 0.6); }
-
-        /* Screenshots */
-        .screenshots { padding: 50px; margin-top: -100px; position: relative; z-index: 10; flex-grow: 1; } /* Margin adjust for mobile */
-        .section-title { font-size: 24px; margin-bottom: 20px; font-weight: 700; }
-        .screen-grid { display: flex; gap: 15px; overflow-x: auto; padding: 20px 0; scrollbar-width: none; -ms-overflow-style: none; }
-        .screen-grid::-webkit-scrollbar { display: none; } /* Hide scrollbar completely */
-        .screen-card { min-width: 280px; height: 160px; background: var(--card-bg); border-radius: 5px; overflow: hidden; cursor: pointer; transition: 0.4s; position: relative; flex-shrink: 0; }
-        .screen-card img { width: 100%; height: 100%; object-fit: cover; }
-        .screen-card:hover { transform: scale(1.1); z-index: 20; box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
-
-        /* General Modal Styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 20px; }
-        .modal-content { background: var(--card-bg); padding: 40px 30px; border-radius: 15px; text-align: center; max-width: 450px; width: 100%; border-top: 4px solid var(--primary); animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 15px; } /* Auto gap for spacing */
-        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-btn { background: var(--primary); color: white; border: none; padding: 15px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; font-size: 16px; }
-        .modal-btn:hover { background: #b20710; transform: scale(1.02); }
-
-        /* 🟢 Neo-Light Green Modal (For History & Name) */
-        .neo-green { border: 2px solid var(--accent); box-shadow: 0 0 20px rgba(37, 211, 102, 0.4), inset 0 0 10px rgba(37, 211, 102, 0.1); animation: neonPulseGreen 1.5s infinite alternate; }
-        @keyframes neonPulseGreen { from { box-shadow: 0 0 10px rgba(37,211,102,0.3), inset 0 0 5px rgba(37,211,102,0.1); } to { box-shadow: 0 0 25px rgba(37,211,102,0.7), inset 0 0 15px rgba(37,211,102,0.3); } }
-        .btn-neo-green { background: var(--accent); color: #000; border-radius: 8px; font-weight: 900; }
-        .btn-neo-green:hover { background: #1ebe5d; box-shadow: 0 0 15px rgba(37,211,102,0.6); }
-
-        /* 👑 Neo-Light Gold VIP Modal */
-        .neo-gold { background: #0f0f0f; border-radius: 20px; border: 2px solid #ffd700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.1); animation: neonPulseGold 1.5s infinite alternate; }
-        @keyframes neonPulseGold { from { box-shadow: 0 0 10px rgba(255,215,0,0.3), inset 0 0 10px rgba(255,215,0,0.1); border-color: #ccaa00; } to { box-shadow: 0 0 35px rgba(255,215,0,0.8), 0 0 50px rgba(255,165,0,0.5), inset 0 0 20px rgba(255,215,0,0.4); border-color: #ffe600; } }
-        .vip-icon { font-size: clamp(50px, 10vw, 70px); color: #ffd700; text-shadow: 0 0 30px #ffd700; animation: floatIcon 3s ease-in-out infinite; }
-        @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .btn-vip { background: linear-gradient(45deg, #ffcc00, #ff9900); color: #000; border-radius: 10px; font-weight: 900; font-size: 17px; }
-        .btn-vip:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(255, 165, 0, 0.6); }
-
-        /* 🔵 Neo-Light Blue Modal (For CineSubz Credit) */
-        .neo-blue { background: #080b12; border-radius: 20px; border: 2px solid #00e5ff; box-shadow: 0 0 20px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.1); animation: neonPulseBlue 1.5s infinite alternate; }
-        @keyframes neonPulseBlue { from { box-shadow: 0 0 10px rgba(0,229,255,0.3), inset 0 0 10px rgba(0,229,255,0.1); border-color: #00b8cc; } to { box-shadow: 0 0 35px rgba(0,229,255,0.8), 0 0 50px rgba(0,183,255,0.5), inset 0 0 20px rgba(0,229,255,0.4); border-color: #00ffff; } }
-        .credit-icon { font-size: clamp(50px, 10vw, 65px); color: #00e5ff; text-shadow: 0 0 25px #00e5ff; animation: floatIcon 3s ease-in-out infinite; }
-        .btn-neo-blue { background: linear-gradient(45deg, #00b8cc, #00e5ff); color: #000; border-radius: 10px; font-weight: 900; font-size: 16px; padding: 15px; width: 100%; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-neo-blue:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0, 229, 255, 0.6); }
-
-        #status { font-size: 15px; text-align: center; }
-        .spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Footer Style */
-        footer { background: #050505; border-top: 1px solid rgba(0, 229, 255, 0.2); box-shadow: 0 -5px 25px rgba(0, 229, 255, 0.05); padding: 40px 20px; text-align: center; width: 100%; margin-top: auto; position: relative; z-index: 10; }
-        .footer-content { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        .footer-credits { font-size: clamp(12px, 2vw, 14px); color: #888; line-height: 1.8; }
-        .footer-credits a { color: #00e5ff; text-decoration: none; font-weight: 900; font-size: clamp(14px, 2.5vw, 16px); text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); transition: 0.3s; cursor: pointer; padding: 0 5px; }
-        .footer-credits a:hover { color: #fff; text-shadow: 0 0 20px #00e5ff, 0 0 30px #00e5ff; }
-        .footer-dev { font-size: clamp(12px, 2vw, 14px); letter-spacing: 1px; color: #aaa; }
-        .footer-dev b { color: var(--primary); font-weight: 900; letter-spacing: 2px; }
-        .bug-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 25px; background: rgba(37, 211, 102, 0.1); border-radius: 50px; text-decoration: none; color: var(--accent); font-size: clamp(12px, 2vw, 14px); font-weight: 700; border: 1px solid rgba(37, 211, 102, 0.3); transition: 0.3s; box-shadow: 0 0 15px rgba(37, 211, 102, 0.1); width: 100%; max-width: 300px; }
-        .bug-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 25px rgba(37, 211, 102, 0.6); transform: translateY(-2px); }
-
-        /* 🔴 100% Mobile Optimization */
-        @media (max-width: 768px) { 
-            header { padding: 15px 20px; }
-            .logo { font-size: 22px; }
-            .back-btn { font-size: 22px; }
-            .hero { padding: 100px 20px 40px 20px; background-position: top center; text-align: center; } /* Centered text */
-            .meta-tags { justify-content: center; }
-            .action-box { padding: 20px; }
-            .screenshots { padding: 30px 20px; margin-top: 0; }
-            .screen-card { min-width: 220px; height: 130px; }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        input:focus { outline: none; border-color: #e50914; box-shadow: 0 0 15px rgba(229, 9, 20, 0.3); }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;" class="antialiased selection:bg-primary selection:text-white">
 
-    <header>
-        <div class="header-left">
-            <a href="films.html" class="back-btn" title="Back to Movies"><i class="fa-solid fa-circle-arrow-left"></i></a>
-            <a href="films.html" class="logo">Movie<span>Stream</span></a>
+    <header class="glass-nav fixed w-full top-0 z-50 px-3 md:px-4 py-3 md:py-4 flex justify-between items-center transition-all backdrop-blur-sm">
+        <div class="flex items-center gap-2 md:gap-4">
+            <a href="films.html" class="text-white hover:text-primary transition bg-white/10 p-2 md:p-2.5 rounded-full hover:bg-white/20 flex items-center justify-center">
+                <i class="fa-solid fa-arrow-left text-sm md:text-base"></i>
+            </a>
+            <a href="films.html" class="text-xl md:text-2xl font-extrabold tracking-wider drop-shadow-lg">Movie<span class="text-primary">Stream</span></a>
         </div>
-        <div class="tag"><i class="fa-solid fa-signal"></i> Online</div>
+        <a href="https://wa.me/94710388481?text=ආයුබෝවන්,%20Kavi%20Cinema%20වෙබ්%20අඩවියේ%20දෝෂයක්%20වාර්තා%20කිරීමට%20අවශ්‍යයි." target="_blank" class="wa-btn bg-white/10 border border-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold flex items-center gap-2 hover:bg-red-500/20 hover:border-red-500 transition duration-300">
+            <i class="fa-solid fa-bug text-red-400"></i> <span class="hidden sm:inline">Bug Report</span><span class="sm:hidden">Report</span>
+        </a>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="movie-title">Lucky Superstar</h1>
-            <div class="meta-tags">
-                <span class="tag">2026</span><span class="tag">Drama</span><span class="tag">Music</span><span class="tag">Tamil</span>
-            </div>
-            <p class="synopsis">Lucky the Superstar” කියන්නේ children-friendly comedy drama චිත්‍රපටයක් වන අතර, මේ කතාවේ ප්‍රධාන භූමිකාව ගන්නේ Lucky කියන පොඩි puppy එකක්. මේ පුංචි බල්ලා තමන් හමුවන හැමෝගේම ජීවිත වෙනස් කරමින්, විශේෂයෙන්ම කුඩා ළමයෙකුගේ දුක නැති කරමින් සහ පවුලක් එකට එක්කරමින් ඉතා හිත උණුසුම් කතාවක් ඉදිරිපත් කරයි.</p>
+    <img src="https://media.cinemaexpress.com/cinemaexpress%2F2026-02-20%2Fb9yf8gdk%2F1771413756303-i.avif?w=480&auto=format%2Ccompress&fit=max" alt="Lucky the Superstar Background" class="hero-bg">
 
-            <div class="action-box">
-                <input type="text" id="waNumber" placeholder="WhatsApp Number (947xxxxxxxx)" onclick="checkHistory()">
-                
-                <button class="btn-main" id="sendBtn" onclick="triggerPreModal()">
-                    <i class="fa-brands fa-whatsapp"></i> GET MOVIE NOW
-                </button>
-                <button class="btn-cancel" id="cancelBtn" onclick="triggerCancelWarning()">
-                    <i class="fa-solid fa-xmark"></i> CANCEL DOWNLOAD
-                </button>
-                <div id="status"></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="screenshots">
-        <h2 class="section-title">Movie Screenshots</h2>
-        <div class="screen-grid">
-            <div class="screen-card"><img src="https://image.tmdb.org/t/p/w300/vlxORWpjT3T0fE3bZKD6OBm6l4n.jpg" alt="Scene 1"></div>
-            <div class="screen-card"><img src="https://image.tmdb.org/t/p/w300/cg2ioY2B4LpnpaYfzSExvmGqy1c.jpg" alt="Scene 2"></div>
-            <div class="screen-card"><img src="https://image.tmdb.org/t/p/w300/ydCvdmdzhYpFOWB3XYdribDKEDa.jpg" alt="Scene 3"></div>
-            <div class="screen-card"><img src="#" alt="Scene 4"></div>
-            <div class="screen-card"><img src="#" alt="Scene 5"></div>
-        </div>
-    </section>
-
-    <!-- Modals -->
-
-    <!-- 🟢 1. Name Collection Modal -->
-    <div class="modal" id="nameModal">
-        <div class="modal-content neo-green">
-            <i class="fa-solid fa-user-astronaut" style="font-size: clamp(40px, 8vw, 50px); color:var(--accent); text-shadow: 0 0 15px var(--accent);"></i>
-            <h3 style="color:var(--accent); font-size: clamp(20px, 5vw, 24px);">නව සාමාජිකයෙක්!</h3>
-            <p style="color:#ccc; font-size: clamp(14px, 3vw, 16px);">චිත්‍රපටය ලබාගැනීමට පෙර, කරුණාකර ඔබගේ නම ලබා දෙන්න.</p>
-            <input type="text" id="userNameInput" placeholder="ඔබගේ නම මෙතන ගසන්න" style="text-align:center; background:#222; width: 100%;">
-            <button class="modal-btn btn-neo-green" onclick="saveNameAndProceed()">ඉදිරියට යන්න <i class="fa-solid fa-arrow-right"></i></button>
-            <button style="background:none; color:gray; border:none; cursor:pointer; font-size: clamp(14px, 3vw, 16px);" onclick="closeM('nameModal')">පසුපසට</button>
-        </div>
-    </div>
-
-    <!-- 🟢 2. History Modal -->
-    <div class="modal" id="historyModal">
-        <div class="modal-content neo-green">
-            <i class="fa-solid fa-user-check" style="font-size: clamp(40px, 8vw, 50px); color:var(--accent); text-shadow: 0 0 15px var(--accent);"></i>
-            <h3 id="historyGreeting" style="color:var(--accent); font-size: clamp(20px, 5vw, 22px);">Welcome Back!</h3>
-            <p style="color:#ccc; font-size: clamp(14px, 3vw, 16px);">ඔබ නැවතත් පහත අංකයම භාවිතා කරනවාද?</p>
-            <h2 id="savedNum" style="color:white; letter-spacing:1px; font-size: clamp(24px, 6vw, 30px); word-break: break-all;"></h2>
-            <button class="modal-btn btn-neo-green" onclick="useOldNum()">ඔව්, එයටම එවන්න</button>
-            <button style="background:none; color:#ff4d4d; border:none; cursor:pointer; font-weight:bold; font-size: clamp(14px, 3vw, 16px);" onclick="clearOldNum()">නැත, අලුත් අංකයක් දෙනවා</button>
-        </div>
-    </div>
-
-    <!-- 🔴 3. Normal Instruction Modal -->
-    <div class="modal" id="instructionModal">
-        <div class="modal-content">
-            <i class="fa-solid fa-film" style="font-size: clamp(40px, 8vw, 50px); color:var(--primary);"></i>
-            <h3 id="normalGreeting" style="font-size: clamp(20px, 5vw, 22px);">READY TO SEND! 🎬</h3>
-            <p style="color:#ccc; font-size: clamp(14px, 3vw, 16px);">ඔබේ WhatsApp ගිණුමට චිත්‍රපටය ලැබීමට නියමිතයි. කරුණාකර තහවුරු කරන්න.</p>
-            <button class="modal-btn" onclick="triggerBot()">CONFIRM & SEND</button>
-            <button style="background:none; color:gray; border:none; cursor:pointer; font-size: clamp(14px, 3vw, 16px);" onclick="closeM('instructionModal')">Close</button>
-        </div>
-    </div>
-
-    <!-- 👑 4. VIP Neo-Light Gold Modal -->
-    <div class="modal" id="vipModal">
-        <div class="modal-content neo-gold">
-            <div class="vip-icon"><i class="fa-solid fa-crown"></i></div>
-            <h3 style="color:#ffd700; font-size: clamp(22px, 5vw, 26px); font-weight:900; text-transform:uppercase;">VIP Access Granted!</h3>
-            <p style="color:#e0e0e0; line-height:1.7; font-size: clamp(13px, 3vw, 15px);">
-                සුබපැතුම් <b id="vipNameDisplay" style="color:#fff;"></b>!<br><br>
-                Developer විසින් ඔබගේ අංකය <b style="color:#ffd700;">VIP Category</b> එකට ඇතුළත් කර ඇති බැවින්, ඔබට පෝලිමේ සිටීම කිසිසේත්ම අදාළ නොවේ!<br><br>
-                සර්වර් එකේ උපරිම කාර්යක්ෂමතාවයෙන් චිත්‍රපටය තත්පර කිහිපයකින් ඔබ වෙත එවනු ඇත. 🚀
-            </p>
-            <button class="modal-btn btn-vip" onclick="triggerBot()">සුපිරි! දැන්ම එවන්න</button>
-            <button style="background:none; color:gray; border:none; cursor:pointer; font-size: clamp(14px, 3vw, 16px);" onclick="closeM('vipModal')">පසුපසට</button>
-        </div>
-    </div>
-
-    <!-- 🔵 5. CineSubz Emotional/Credit Modal -->
-    <div class="modal" id="cineSubzModal">
-        <div class="modal-content neo-blue">
-            <div class="credit-icon"><i class="fa-solid fa-heart"></i></div>
-            <h3 style="color:#00e5ff; font-size: clamp(20px, 5vw, 24px); font-weight:900;">විශේෂ ස්තූතිය!</h3>
-            <p style="color:#e0e0e0; line-height:1.7; font-size: clamp(13px, 3vw, 15px);">
-                මෙම පද්ධතිය මා විසින් නිර්මාණය කර ඇත්තේ <b style="color:#00e5ff;">WhatsApp Packages</b> හරහා දත්ත කැපීමකින් තොරව චිත්‍රපට ලබාගැනීමේ පහසුව උදෙසා පමණි.<br><br>
-                මෙහි ඇති සියලුම චිත්‍රපට සහ උපසිරැසි වල පූර්ණ අයිතිය සහ ගෞරවය <b style="color:#00e5ff;">CineSubz.net</b> කණ්ඩායමට හිමිවිය යුතුය. ❤️<br><br>
-                ඔබ දැන් පිවිසෙන්නේ එම මුල් වෙබ් අඩවිය වෙතයි...
-            </p>
-            <button class="btn-neo-blue" onclick="proceedToCineSubz()">හරි, වෙබ් අඩවියට යන්න <i class="fa-solid fa-external-link-alt" style="margin-left:5px;"></i></button>
-            <button style="background:none; color:gray; border:none; cursor:pointer; font-size: clamp(14px, 3vw, 16px);" onclick="closeM('cineSubzModal')">පසුපසට</button>
-        </div>
-    </div>
-
-    <!-- Cancel Warning -->
-    <div class="modal" id="cancelModal">
-        <div class="modal-content">
-            <i class="fa-solid fa-triangle-exclamation" style="font-size: clamp(40px, 8vw, 50px); color:gray;"></i>
-            <h3 style="font-size: clamp(20px, 5vw, 24px);">අවලංගු කරනවාද?</h3>
-            <p style="color:#ccc; font-size: clamp(14px, 3vw, 16px);">මෙය නතර කළහොත් ඔබට චිත්‍රපටය ලැබෙන්නේ නැත.</p>
-            <button class="modal-btn" style="background:#444;" onclick="triggerCancel()">ඔව්, අවලංගු කරන්න</button>
-            <button style="background:none; color:var(--primary); border:none; cursor:pointer; font-weight:bold; font-size: clamp(14px, 3vw, 16px);" onclick="closeM('cancelModal')">නැත, දිගටම කරගෙන යන්න</button>
-        </div>
-    </div>
-
-    <!-- Success / Error Info Modal -->
-    <div class="modal" id="resultModal">
-        <div class="modal-content">
-            <div class="modal-icon" id="resultIcon"></div>
-            <h3 id="resultTitle" style="font-size: clamp(20px, 5vw, 24px);"></h3>
-            <p id="resultMessage" style="font-size: clamp(14px, 3vw, 16px); color:#ccc;"></p>
-            <button class="modal-btn" onclick="closeM('resultModal')">හරි</button>
-        </div>
-    </div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-dev">
-                System Developed & Maintained by <b>Kaveesha Theekshana</b>
+    <main class="container mx-auto px-4 pt-24 md:pt-32 pb-20 max-w-5xl">
+        
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start" data-aos="fade-up">
+            <div class="w-[60%] max-w-[220px] md:w-1/3 md:max-w-none shrink-0 rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10 float-anim">
+                <img src="https://cinesubz.net/wp-content/uploads/2026/02/fb5ao0wON2Dq3atOy3rikyL8IsP.jpg" alt="Lucky the Superstar Poster" class="w-full h-auto object-cover">
             </div>
             
-            <div class="footer-credits">
-                චිත්‍රපට සහ උපසිරැසි ලබාගැනීමේ පූර්ණ අයිතිය සහ ස්තූතිය <br>
-                <a href="#" onclick="openCineSubz(event)">CineSubz.net</a> වෙබ් අඩවිය සතු වේ.
+            <div class="w-full md:w-2/3 text-center md:text-left space-y-3 md:space-y-4 mt-2 md:mt-0">
+                <span class="bg-primary px-3 py-1 rounded text-[10px] md:text-xs font-bold tracking-widest uppercase shadow-lg shadow-primary/40 inline-block mb-1">WEB</span>
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-black leading-tight drop-shadow-xl">Lucky the Superstar  <br><span class="text-gray-400 text-2xl sm:text-3xl md:text-4xl font-semibold">(2026)</span></h1>
+                
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4 text-xs md:text-sm text-gray-300 font-medium">
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-clock text-primary"></i> 2026</span>
+                    <span class="hidden sm:inline">|</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-star text-gold"></i>  6.2 (82) IMDB</span>
+                    <span class="hidden sm:inline">|</span>
+                    <span class="flex items-center gap-1 w-full sm:w-auto mt-1 sm:mt-0 justify-center"><i class="fa-solid fa-film text-primary"></i> Drama, Music, Tamil</span>
+                </div>
+                
+                <p class="text-gray-400 leading-relaxed text-xs sm:text-sm md:text-base max-w-2xl bg-black/40 p-3 md:p-4 rounded-xl border border-white/5 shadow-inner mt-4">
+                    Lucky the Superstar” කියන්නේ children-friendly comedy drama චිත්‍රපටයක් වන අතර, මේ කතාවේ ප්‍රධාන භූමිකාව ගන්නේ Lucky කියන පොඩි puppy එකක්. මේ පුංචි බල්ලා තමන් හමුවන හැමෝගේම ජීවිත වෙනස් කරමින්, විශේෂයෙන්ම කුඩා ළමයෙකුගේ දුක නැති කරමින් සහ පවුලක් එකට එක්කරමින් ඉතා හිත උණුසුම් කතාවක් ඉදිරිපත් කරයි.
+                </p>
             </div>
+        </div>
 
-            <a href="https://wa.me/94710388481?text=ආයුබෝවන් Developer, Mata Kavi Cinema වෙබ් අඩවියේ දෝෂයක් මා දුටුවා. කරුණාකර සහාය වන්න." target="_blank" class="bug-btn">
-                <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Report Bugs & Errors
-            </a>
+        <div class="mt-12 md:mt-16" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="text-lg md:text-xl font-bold mb-4 md:mb-6 border-l-4 border-primary pl-3">Screenshots</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <img src="https://image.tmdb.org/t/p/w300/cg2ioY2B4LpnpaYfzSExvmGqy1c.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
+                <img src="https://image.tmdb.org/t/p/w300/vlxORWpjT3T0fE3bZKD6OBm6l4n.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
+                <img src="https://image.tmdb.org/t/p/w300/ydCvdmdzhYpFOWB3XYdribDKEDa.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
+                <img src="https://image.tmdb.org/t/p/w300/cg2ioY2B4LpnpaYfzSExvmGqy1c.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
+            </div>
+        </div>
+
+        <div class="mt-12 md:mt-16 max-w-xl mx-auto" data-aos="zoom-in" data-aos-delay="300">
+            <div class="glass-card p-5 sm:p-8 rounded-3xl text-center relative overflow-hidden">
+                <div class="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 blur-3xl rounded-full pointer-events-none"></div>
+                
+                <div id="section_askNumber" class="ui-section">
+                    <h2 class="text-xl md:text-2xl font-bold mb-1 md:mb-2">WhatsApp ඔස්සේ ලබාගන්න</h2>
+                    <p class="text-gray-400 text-xs md:text-sm mb-5 md:mb-6">ඔබගේ WhatsApp අංකය ඇතුලත් කරන්න.</p>
+                    <input type="tel" id="input_waNumber" placeholder="947xxxxxxxx" class="w-full bg-black/60 border border-white/10 text-white px-4 py-3.5 md:py-4 rounded-xl text-center font-bold tracking-widest text-base md:text-lg mb-4 placeholder:text-gray-600">
+                    <button onclick="handleNumberSubmit()" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3.5 md:py-4 rounded-xl shadow-lg shadow-green-500/30 transform hover:-translate-y-1 transition duration-300 flex justify-center items-center gap-2 text-base">
+                        <i class="fa-brands fa-whatsapp text-lg md:text-xl"></i> ඉදිරියට යන්න
+                    </button>
+                </div>
+
+                <div id="section_askName" class="ui-section">
+                    <h2 class="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gold">නව ගිණුමක්!</h2>
+                    <p class="text-gray-400 text-xs md:text-sm mb-5 md:mb-6">අපි ඔබව අමතන්න අවශ්‍ය නම කුමක්ද?</p>
+                    <input type="text" id="input_userName" placeholder="ඔබගේ නම..." class="w-full bg-black/60 border border-white/10 text-white px-4 py-3.5 md:py-4 rounded-xl text-center font-bold text-base md:text-lg mb-4 placeholder:text-gray-600">
+                    <div class="flex gap-2">
+                        <button onclick="switchState('section_askNumber')" class="w-[35%] bg-white/10 hover:bg-white/20 text-white font-bold py-3.5 md:py-4 rounded-xl transition text-sm md:text-base">පසුපසට</button>
+                        <button onclick="saveUserAndProceed()" class="w-[65%] bg-primary hover:bg-red-700 text-white font-bold py-3.5 md:py-4 rounded-xl shadow-lg shadow-primary/30 transform hover:-translate-y-1 transition flex justify-center items-center gap-2 text-sm md:text-base">
+                            තහවුරු කරන්න <i class="fa-solid fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="section_welcomeReturn" class="ui-section">
+                    <div class="inline-block p-3 md:p-4 rounded-full bg-white/5 border border-white/10 mb-3 md:mb-4">
+                        <i class="fa-solid fa-user-astronaut text-3xl md:text-4xl text-gold"></i>
+                    </div>
+                    <h2 class="text-xl md:text-2xl font-bold mb-1">ආයුබෝවන්, <span id="display_name" class="gradient-text"></span>! 👋</h2>
+                    <p class="text-gray-400 text-xs md:text-sm mb-5 md:mb-6">ඔබගේ <span id="display_phone" class="font-bold text-white"></span> අංකයට චිත්‍රපටය එවන්නද?</p>
+                    
+                    <button onclick="showVIPStatus()" class="w-full bg-gradient-to-r from-primary to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3.5 md:py-4 rounded-xl shadow-lg shadow-primary/30 transform hover:-translate-y-1 transition flex justify-center items-center gap-2 mb-3 md:mb-4 text-sm md:text-base">
+                        <i class="fa-brands fa-whatsapp text-lg md:text-xl"></i> ඔව්, දැන්ම එවන්න
+                    </button>
+                    <button onclick="clearUser()" class="text-[11px] md:text-xs text-gray-500 hover:text-white underline transition py-2">වෙනත් අංකයක් භාවිතා කරන්න</button>
+                </div>
+
+                <div id="section_process" class="ui-section">
+                    <div id="vip_banner" class="mb-5 md:mb-6 bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 p-3 md:p-4 rounded-xl">
+                        <i class="fa-solid fa-crown text-2xl md:text-3xl text-gold mb-1 md:mb-2 drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]"></i>
+                        <h3 class="font-bold text-gold text-base md:text-lg">VIP අවසරය ලබාදෙන ලදි!</h3>
+                    </div>
+                    
+                    <div class="bg-black/50 border border-white/10 rounded-xl p-5 md:p-6 mb-4 min-h-[100px] md:min-h-[120px] flex flex-col justify-center items-center">
+                        <div id="status_text" class="text-xs md:text-sm font-semibold text-gray-200 text-center leading-relaxed">
+                            <div class="w-7 h-7 md:w-8 md:h-8 border-4 border-white/20 border-t-accent rounded-full animate-spin mx-auto mb-2 md:mb-3"></div>
+                            පද්ධතියට සම්බන්ධ වෙමින් පවතී...
+                        </div>
+                    </div>
+                    
+                    <button id="btn_cancel_main" onclick="confirmCancel()" class="w-full bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 border border-red-500/50 font-bold py-3 md:py-3.5 rounded-xl transition flex justify-center items-center gap-2 text-sm md:text-base">
+                        <i class="fa-solid fa-xmark"></i> ක්‍රියාවලිය නවත්වන්න
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mt-12 md:mt-16 text-center w-full" data-aos="fade-up" data-aos-delay="400">
+            <button onclick="openCinesubzIntercept()" class="w-full sm:w-auto inline-block bg-[#1a1a1a] hover:bg-[#222] border border-[#333] px-4 py-3 sm:px-6 sm:py-4 rounded-2xl transition duration-300 shadow-xl group cursor-pointer">
+                <p class="text-gray-400 text-[11px] sm:text-xs md:text-sm font-medium">සිංහල උපසිරැසි සහ වීඩියෝ පිටපත් වල සම්පූර්ණ අයිතිය</p>
+                <div class="text-lg md:text-xl font-black mt-1 group-hover:text-primary transition"><i class="fa-solid fa-closed-captioning"></i> CINESUBZ.NET</div>
+                <p class="text-[9px] md:text-[10px] text-gray-500 mt-1 md:mt-2">ඔවුන්ට අපගේ උපරිම ගෞරවය හිමිවේ! <span class="text-primary group-hover:underline">පිවිසෙන්න <i class="fa-solid fa-arrow-up-right-from-square text-[8px] md:text-[9px]"></i></span></p>
+            </button>
+        </div>
+
+    </main>
+
+    <div id="cancel_modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="glass-card w-[90%] max-w-sm p-6 rounded-3xl text-center transform scale-95 transition-transform" id="cancel_content">
+            <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/50">
+                <i class="fa-solid fa-triangle-exclamation text-2xl text-red-500 animate-pulse"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-white">නතර කිරීමට අවශ්‍යද?</h3>
+            <p class="text-xs text-gray-400 mb-6 leading-relaxed">ඔබ මෙම ඉල්ලීම නතර කළහොත්, නැවත පෝලිමේ මුල සිට පැමිණීමට සිදුවනු ඇත.</p>
+            <div class="flex flex-col gap-2">
+                <button onclick="proceedCancel()" class="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold transition text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-600/20">
+                    ඔව්, නවත්වන්න <i class="fa-solid fa-ban text-xs"></i>
+                </button>
+                <button onclick="closeCancelModal()" class="w-full bg-white/10 hover:bg-white/20 py-3 rounded-xl font-semibold transition text-xs">නැහැ, දිගටම කරගෙන යන්න</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="glass-nav py-5 md:py-6 mt-8 md:mt-10 border-t border-white/5 relative z-10">
+        <div class="text-center text-[10px] sm:text-xs md:text-sm font-mono text-gray-400 tracking-widest px-4 leading-relaxed">
+            <i class="fa-solid fa-code text-primary"></i> Developer and System Maintained By <br class="sm:hidden">
+            <span class="text-white font-bold tracking-widest text-[11px] sm:text-sm md:text-base drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">KAVEESHA THEEKSHANA</span>
         </div>
     </footer>
 
-    <!-- Script Logic -->
+    <div id="cinesubz_modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="glass-card w-[95%] max-w-md p-6 sm:p-8 rounded-3xl text-center transform scale-95 transition-transform" id="cinesubz_content">
+            <div class="w-14 h-14 md:w-16 md:h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 border border-blue-500/50">
+                <i class="fa-solid fa-circle-info text-xl md:text-2xl text-blue-400"></i>
+            </div>
+            <h3 class="text-lg md:text-xl font-bold mb-3 md:mb-4 text-white">වැදගත් පණිවිඩයකි!</h3>
+            <p class="text-xs md:text-sm text-gray-300 leading-relaxed mb-6 md:mb-8 text-justify md:text-center">
+                මා විසින් මෙය විශේෂයෙන් <b class="text-accent">WhatsApp ඩේටා පැකේජ්</b> භාවිතා කරන අයගේ පහසුව සඳහා නිපදවා ඇති අතර, ඔබට සාමාන්‍ය ඩේටා භාවිතයෙන් චිත්‍රපට ලබාගැනීමට අවශ්‍ය නම් චිත්‍රපටවල සම්පූර්ණ අයිතිය ඇති <b>Cinesubz</b> වෙබ් අඩවියෙන් ලබාගත හැක. ඔවුන්ගේ මහන්සියට සම්පූර්ණ ගෞරවය හිමිවේ!
+            </p>
+            <div class="flex flex-col-reverse sm:flex-row gap-3">
+                <button onclick="closeCinesubzModal()" class="w-full sm:w-1/2 bg-white/10 hover:bg-white/20 py-3 rounded-xl font-semibold transition text-sm">පසුවට</button>
+                <a href="https://cinesubz.net/" target="_blank" onclick="closeCinesubzModal()" class="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-semibold transition shadow-lg shadow-blue-500/30 text-sm flex items-center justify-center gap-2">
+                    එකඟයි <i class="fa-solid fa-check"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        const BOT_URL = "https://api.moviestream.lat";
-        const MOVIE_NAME = "Lucky Superstar"; 
+        AOS.init({ once: true, duration: 800 });
+
+        const BOT_URL = "https://api.moviestream.lat"; 
+        const MOVIE_NAME = "Lucky the Superstar - 720p"; 
         const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdE8G8qAAAHiA/RWxTL98L1p5FbFOuEI1MwG9lLGMuRSMN-X22Yl60JJU";
+
+        let currentUser = "";
+        let currentNumber = "";
         
-        const storageKey = 'active_movie_' + MOVIE_NAME;
-        const VIP_NUMBERS = ["94710388481", "94702409932"];
+        const socket = io(BOT_URL, {
+            reconnectionAttempts: 5,
+            timeout: 10000
+        });
 
-        let controller = null;
-        let pollingInterval = null; 
+        socket.on('connect', () => {
+            console.log("✅ Bot Live Connection Established!");
+        });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const lastNum = localStorage.getItem('last_user_num');
-            if (lastNum) {
-                document.getElementById('waNumber').value = lastNum;
-                checkCurrentStatus(lastNum);
+        socket.on('disconnect', () => {
+            console.warn("⚠️ Bot Live Connection Lost!");
+            const dlState = localStorage.getItem('dl_state_' + MOVIE_NAME);
+            if (dlState === 'processing') {
+                const s = document.getElementById('status_text');
+                if(s) s.innerHTML = `<i class='fa-solid fa-wifi text-2xl md:text-3xl text-yellow-500 mb-2 md:mb-3 block animate-pulse'></i><span class='text-yellow-400'>සර්වර් එක සමග සම්බන්ධය විසන්ධි විය. නැවත සම්බන්ධ වෙමින් පවතී...</span>`;
             }
         });
 
-        function clearDownloadState() {
-            if (pollingInterval) clearInterval(pollingInterval);
-            localStorage.removeItem(storageKey); 
-        }
-
-        function closeM(id) { document.getElementById(id).style.display = 'none'; }
-
-        function isVipNumber(num) {
-            if (!num) return false;
-            let cleanNum = num.replace(/[^0-9]/g, '');
-            let formatted = cleanNum.startsWith('0') ? '94' + cleanNum.slice(1) : cleanNum;
-            return VIP_NUMBERS.includes(formatted) || VIP_NUMBERS.includes(cleanNum);
-        }
-
-        // --- 🔵 CineSubz Modal Logic ---
-        function openCineSubz(event) {
-            event.preventDefault(); 
-            document.getElementById('cineSubzModal').style.display = 'flex';
-        }
-
-        function proceedToCineSubz() {
-            closeM('cineSubzModal');
-            window.open('https://cinesubz.net/', '_blank'); 
-        }
-
-        function checkHistory() {
-            const lastNum = localStorage.getItem('last_user_num');
-            if (lastNum && document.getElementById('waNumber').value === "") {
-                const savedName = localStorage.getItem('userName_' + lastNum) || "මිත්‍රයා";
-                document.getElementById('historyGreeting').innerText = `ආයුබෝවන් ${savedName}!`;
-                document.getElementById('savedNum').innerText = lastNum;
-                document.getElementById('historyModal').style.display = 'flex';
-            }
-        }
-
-        function useOldNum() {
-            document.getElementById('waNumber').value = localStorage.getItem('last_user_num');
-            closeM('historyModal');
-        }
-
-        function clearOldNum() {
-            document.getElementById('waNumber').value = ""; 
-            localStorage.removeItem('last_user_num'); 
-            clearDownloadState();
-            setUI(false);
-            closeM('historyModal'); 
-            document.getElementById('waNumber').focus(); 
-        }
-
-        function triggerPreModal() {
-            const num = document.getElementById('waNumber').value.trim();
-            if (num.length < 10) { alert("කරුණාකර නිවැරදි WhatsApp අංකයක් ඇතුළත් කරන්න!"); return; }
+        function switchState(targetId, instant = false) {
+            document.querySelectorAll('.ui-section').forEach(el => {
+                el.classList.remove('active');
+                if(instant) el.style.display = 'none';
+                else setTimeout(() => el.style.display = 'none', 300);
+            });
             
-            const savedName = localStorage.getItem('userName_' + num);
-            if (!savedName) {
-                document.getElementById('userNameInput').value = ""; 
-                document.getElementById('nameModal').style.display = 'flex';
+            if(instant) {
+                const target = document.getElementById(targetId);
+                target.style.display = 'block';
+                target.classList.add('active');
             } else {
-                checkVipAndShowModal(num, savedName);
+                setTimeout(() => {
+                    const target = document.getElementById(targetId);
+                    target.style.display = 'block';
+                    setTimeout(() => target.classList.add('active'), 10);
+                }, 300);
             }
         }
 
-        function saveNameAndProceed() {
-            const name = document.getElementById('userNameInput').value.trim();
-            if (!name) { alert("කරුණාකර ඔබගේ නම ඇතුළත් කරන්න!"); return; }
-            const num = document.getElementById('waNumber').value.trim();
-            
-            localStorage.setItem('userName_' + num, name);
-            closeM('nameModal');
-            checkVipAndShowModal(num, name);
-        }
+        window.onload = () => {
+            const savedName = localStorage.getItem('kavi_user_name');
+            const savedNum = localStorage.getItem('kavi_user_num');
+            const dlState = localStorage.getItem('dl_state_' + MOVIE_NAME);
 
-        function checkVipAndShowModal(num, name) {
-            if (isVipNumber(num)) {
-                document.getElementById('vipNameDisplay').innerText = name;
-                document.getElementById('vipModal').style.display = 'flex';
-            } else {
-                document.getElementById('normalGreeting').innerText = `නියමයි ${name}! 🎬`;
-                document.getElementById('instructionModal').style.display = 'flex';
-            }
-        }
+            if (savedName && savedNum) {
+                currentUser = savedName;
+                currentNumber = savedNum;
+                document.getElementById('display_name').innerText = savedName;
+                document.getElementById('display_phone').innerText = "+" + savedNum;
+                
+                if (dlState === 'processing') {
+                    switchState('section_process', true);
+                    
+                    fetch(`${BOT_URL}/check-status?number=${currentNumber}&movieName=${encodeURIComponent(MOVIE_NAME)}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.status === "Success") {
+                                localStorage.setItem('dl_state_' + MOVIE_NAME, 'success');
+                                showSuccessPersistent();
+                            } else if (data.status === "Error") {
+                                localStorage.removeItem('dl_state_' + MOVIE_NAME);
+                                // මෙතැනදී Cancel පණිවිඩය පෙන්වයි
+                                document.getElementById('status_text').innerHTML = "<i class='fa-solid fa-circle-xmark text-2xl md:text-3xl text-red-500 mb-2 md:mb-3 block'></i><span class='text-red-400'>ඔබ විසින් සාර්ථකව අවලංගු කරන ලදි.</span>";
+                                document.getElementById('btn_cancel_main').style.display = 'none';
+                            } else {
+                                updateStatusUI(data.status, data.position);
+                            }
+                        }).catch(e => {
+                            updateStatusUI("Processing"); 
+                        });
 
-        async function triggerBot() {
-            closeM('instructionModal');
-            closeM('vipModal');
-
-            const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
-            localStorage.setItem('last_user_num', number);
-            localStorage.setItem(storageKey, "true"); 
-            
-            setUI(true);
-            document.getElementById('status').innerHTML = "<div class='spinner'></div> සර්වර් එකට සම්බන්ධ වෙමින් පවතී...";
-            
-            controller = new AbortController();
-
-            try {
-                const response = await fetch(`${BOT_URL}/send-movie?number=${number}&movieUrl=${encodeURIComponent(MOVIE_LINK)}&movieName=${encodeURIComponent(MOVIE_NAME)}`, { signal: controller.signal });
-                const data = await response.json();
-
-                if (data.status === "Queued" || data.status === "Success" || data.status === "Processing") {
-                    updateStatusDisplay(data.status, data.position);
-                    startPolling(number);
-                }
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    document.getElementById('status').innerHTML = "<span style='color:#ff4d4d;'>Connection Error!</span>";
-                    setUI(false);
-                }
-            }
-        }
-
-        async function checkCurrentStatus(number) {
-            const isThisMovieActive = localStorage.getItem(storageKey); 
-            if (!isThisMovieActive) return;
-
-            try {
-                const res = await fetch(`${BOT_URL}/check-status?number=${number}&movieName=${encodeURIComponent(MOVIE_NAME)}`);
-                const data = await res.json();
-
-                if (data.status === "Queued" || data.status === "Processing") {
-                    setUI(true);
-                    updateStatusDisplay(data.status, data.position);
-                    startPolling(number); 
-                } else if (data.status === "Success") {
-                    clearDownloadState();
+                } else if (dlState === 'success') {
+                    switchState('section_process', true);
+                    showSuccessPersistent();
                 } else {
-                    clearDownloadState();
+                    switchState('section_welcomeReturn', true);
                 }
-            } catch (e) {}
-        }
+            } else {
+                switchState('section_askNumber', true);
+            }
+        };
 
-        function startPolling(number) {
-            if (pollingInterval) clearInterval(pollingInterval);
-            
-            pollingInterval = setInterval(async () => {
-                try {
-                    const res = await fetch(`${BOT_URL}/check-status?number=${number}&movieName=${encodeURIComponent(MOVIE_NAME)}`);
-                    const data = await res.json();
-
-                    if (data.status === "Success") {
-                        clearInterval(pollingInterval);
-                        clearDownloadState();
-                        document.getElementById('status').innerHTML = "<span style='color:var(--accent);'><i class='fa-brands fa-whatsapp'></i> සාර්ථකයි! ඔබගේ WhatsApp පරීක්ෂා කරන්න.</span>";
-                        setTimeout(() => setUI(false), 5000);
-                    } else if (data.status === "Error") {
-                        clearInterval(pollingInterval);
-                        clearDownloadState();
-                        document.getElementById('status').innerHTML = "<span style='color:#ff4d4d;'>යැවීමට නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.</span>";
-                        setUI(false);
-                    } else {
-                        updateStatusDisplay(data.status, data.position);
-                    }
-                } catch (e) {}
-            }, 10000); 
-        }
-
-        function updateStatusDisplay(status, position) {
-            const statusDiv = document.getElementById('status');
-            const currentNum = localStorage.getItem('last_user_num');
-
-            if (isVipNumber(currentNum)) {
-                statusDiv.innerHTML = `<span style="color:#ffd700;"><div class='spinner' style='border-top-color:#ffd700;'></div> VIP Access: දැන්ම යවමින් පවතී...</span>`;
+        function handleNumberSubmit() {
+            let num = document.getElementById('input_waNumber').value.replace(/\D/g, '');
+            if (num.length < 9) {
+                alert("කරුණාකර නිවැරදි WhatsApp අංකයක් ඇතුලත් කරන්න.");
                 return;
             }
-
-            if (status === "Queued") {
-                statusDiv.innerHTML = `<span style="color:#ccc;"><i class="fa-solid fa-clock"></i> පෝලිමේ (ස්ථානය: #${position || 0}) - කරුණාකර රැඳී සිටින්න...</span>`;
-            } else if (status === "Processing") {
-                statusDiv.innerHTML = `<span style="color:var(--accent);"><div class='spinner' style='border-top-color:var(--accent);'></div> දැන් WhatsApp වෙත යවමින් පවතී...</span>`;
-            }
-        }
-
-        function setUI(isSending) {
-            const sendBtn = document.getElementById('sendBtn');
-            const cancelBtn = document.getElementById('cancelBtn');
-
-            if (isSending) {
-                sendBtn.style.display = 'none'; 
-                cancelBtn.style.display = 'flex';
+            
+            const savedNum = localStorage.getItem('kavi_user_num');
+            if(savedNum === num && localStorage.getItem('kavi_user_name')) {
+                currentUser = localStorage.getItem('kavi_user_name');
+                currentNumber = num;
+                document.getElementById('display_name').innerText = currentUser;
+                document.getElementById('display_phone').innerText = "+" + currentNumber;
+                switchState('section_welcomeReturn');
             } else {
-                sendBtn.style.display = 'flex'; 
-                cancelBtn.style.display = 'none';
+                currentNumber = num;
+                switchState('section_askName');
             }
         }
 
-        function triggerCancelWarning() {
-            document.getElementById('cancelModal').style.display = 'flex';
+        function saveUserAndProceed() {
+            let name = document.getElementById('input_userName').value.trim();
+            if(!name) { alert("කරුණාකර නමක් ඇතුලත් කරන්න."); return; }
+            
+            localStorage.setItem('kavi_user_name', name);
+            localStorage.setItem('kavi_user_num', currentNumber);
+            currentUser = name;
+            
+            showVIPStatus();
         }
 
-        async function triggerCancel() {
-            closeM('cancelModal');
-            const number = document.getElementById('waNumber').value.replace(/[^0-9]/g, '');
-            if (controller) controller.abort();
-            clearDownloadState();
-            
-            document.getElementById('status').innerHTML = "<span style='color:gray;'>අවලංගු කරමින් පවතී...</span>";
-            
-            try {
-                await fetch(`${BOT_URL}/cancel?number=${number}&movieName=${encodeURIComponent(MOVIE_NAME)}`);
-            } catch(e) {}
+        function clearUser() {
+            localStorage.removeItem('kavi_user_name');
+            localStorage.removeItem('kavi_user_num');
+            localStorage.removeItem('dl_state_' + MOVIE_NAME);
+            localStorage.removeItem('task_id_' + MOVIE_NAME);
+            switchState('section_askNumber');
+        }
 
-            setTimeout(() => location.reload(), 1000);
+        function showVIPStatus() {
+            switchState('section_process');
+            startDownload();
+        }
+
+        async function startDownload() {
+            const statusBox = document.getElementById('status_text');
+            statusBox.innerHTML = "<div class='w-7 h-7 md:w-8 md:h-8 border-4 border-white/20 border-t-accent rounded-full animate-spin mx-auto mb-2 md:mb-3'></div> සර්වර් එකට සම්බන්ධ වෙමින්...";
+
+            try {
+                const response = await fetch(`${BOT_URL}/send-movie`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        number: currentNumber, 
+                        movieUrl: MOVIE_LINK, 
+                        movieName: MOVIE_NAME,
+                        userName: currentUser
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "Queued" || data.status === "Processing" || data.status === "Success") {
+                    localStorage.setItem('dl_state_' + MOVIE_NAME, 'processing');
+                    if (data.id) localStorage.setItem('task_id_' + MOVIE_NAME, data.id);
+                    updateStatusUI(data.status, data.position);
+                } else { throw new Error(); }
+
+            } catch (err) { 
+                statusBox.innerHTML = "<i class='fa-solid fa-triangle-exclamation text-2xl md:text-3xl text-red-500 mb-2 md:mb-3 block'></i><span class='text-red-400'>Server Offline! කරුණාකර Bug Report එකක් දමන්න.</span>"; 
+                setTimeout(() => location.reload(), 5000);
+            }
+        }
+
+        socket.on('bot_update', (data) => {
+            if (data.number === currentNumber && data.movieName === MOVIE_NAME) {
+                if (data.status === "Success") {
+                    localStorage.setItem('dl_state_' + MOVIE_NAME, 'success');
+                    showSuccessPersistent(); 
+                } else if (data.status === "Error") {
+                    localStorage.removeItem('dl_state_' + MOVIE_NAME);
+                    // මෙතැනදීත් Cancel පණිවිඩය පෙන්වයි
+                    document.getElementById('status_text').innerHTML = "<i class='fa-solid fa-circle-xmark text-2xl md:text-3xl text-red-500 mb-2 md:mb-3 block'></i><span class='text-red-400'>ඔබ විසින් සාර්ථකව අවලංගු කරන ලදි.</span>";
+                    document.getElementById('btn_cancel_main').style.display = 'none';
+                } else {
+                    updateStatusUI(data.status, data.position);
+                }
+            }
+        });
+
+        function updateStatusUI(status, position) {
+            const s = document.getElementById('status_text');
+            if (!s) return;
+            if (status === "Queued") {
+                s.innerHTML = `<div class='w-7 h-7 md:w-8 md:h-8 border-4 border-white/20 border-t-gold rounded-full animate-spin mx-auto mb-2 md:mb-3'></div> ඔබ පෝලිමේ සිටී...<br><span class="text-[11px] md:text-xs text-gray-400 mt-2 block">ස්ථානය: <span class="text-gold font-bold text-base md:text-lg">#${position || 0}</span></span>`;
+            } else if (status === "Processing") {
+                s.innerHTML = `<i class='fa-solid fa-rocket text-2xl md:text-3xl text-accent mb-2 md:mb-3 block animate-bounce'></i> චිත්‍රපටය අධිවේගීව එවමින් පවතී...`;
+            }
+        }
+
+        function showSuccessPersistent() {
+            document.getElementById('vip_banner').style.display = 'none';
+            const s = document.getElementById('status_text');
+            if(s) {
+                s.innerHTML = `
+                    <div class="transform scale-125 md:scale-150 mb-4 md:mb-6 mt-2 md:mt-4">
+                        <i class="fa-solid fa-circle-check text-accent drop-shadow-[0_0_15px_rgba(37,211,102,0.8)]"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold text-white mb-1 md:mb-2">සාර්ථකයි, ${currentUser}! 🎉</h3>
+                    <p class="text-xs md:text-sm text-gray-400 mb-5">චිත්‍රපටය ඔබගේ WhatsApp ගිණුමට යවා ඇත.</p>
+                    <button onclick="clearStateAndReload()" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition border border-white/20">නැවත මුල් පිටුවට</button>
+                `;
+            }
+        }
+
+        function clearStateAndReload() {
+            localStorage.removeItem('dl_state_' + MOVIE_NAME);
+            localStorage.removeItem('task_id_' + MOVIE_NAME);
+            location.reload();
+        }
+
+        function confirmCancel() {
+            const modal = document.getElementById('cancel_modal');
+            const content = document.getElementById('cancel_content');
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCancelModal() {
+            const modal = document.getElementById('cancel_modal');
+            const content = document.getElementById('cancel_content');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        async function proceedCancel() {
+            closeCancelModal();
+            const taskId = localStorage.getItem('task_id_' + MOVIE_NAME);
+            localStorage.removeItem('dl_state_' + MOVIE_NAME);
+            localStorage.removeItem('task_id_' + MOVIE_NAME);
+            
+            document.getElementById('status_text').innerHTML = "<div class='w-7 h-7 md:w-8 md:h-8 border-4 border-white/20 border-t-red-500 rounded-full animate-spin mx-auto mb-2 md:mb-3'></div><span class='text-red-400'>අවලංගු කරමින් පවතී...</span>";
+            
+            try { 
+                if (taskId) {
+                    await fetch(`${BOT_URL}/cancel-movie?id=${taskId}`);
+                } else {
+                    await fetch(`${BOT_URL}/cancel?number=${currentNumber}&movieName=${encodeURIComponent(MOVIE_NAME)}`); 
+                }
+            } catch(e) {}
+            // පණිවිඩය බලාගැනීමට තත්පර 3ක් ඉඩ දී Reload කරයි
+            setTimeout(() => location.reload(), 3000);
+        }
+
+        const cModal = document.getElementById('cinesubz_modal');
+        const cContent = document.getElementById('cinesubz_content');
+
+        function openCinesubzIntercept() {
+            cModal.style.display = 'flex';
+            setTimeout(() => {
+                cModal.classList.remove('opacity-0');
+                cContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCinesubzModal() {
+            cModal.classList.add('opacity-0');
+            cContent.classList.add('scale-95');
+            setTimeout(() => { cModal.style.display = 'none'; }, 300);
         }
     </script>
 </body>
