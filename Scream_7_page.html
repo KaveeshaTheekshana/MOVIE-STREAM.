@@ -68,12 +68,12 @@
             
             <div class="w-full md:w-2/3 text-center md:text-left space-y-3 md:space-y-4 mt-2 md:mt-0">
                 <span class="bg-primary px-3 py-1 rounded text-[10px] md:text-xs font-bold tracking-widest uppercase shadow-lg shadow-primary/40 inline-block mb-1">WEB-DL</span>
-                <h1 class="text-3xl sm:text-4xl md:text-6xl font-black leading-tight drop-shadow-xl">Scream 7  <br><span class="text-gray-400 text-2xl sm:text-3xl md:text-4xl font-semibold">(2026)</span></h1>
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-black leading-tight drop-shadow-xl">Scream 7  <br><span class="text-gray-400 text-2xl sm:text-3xl md:text-4xl font-semibold">(2026)</span></h1>
                 
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 md:gap-4 text-xs md:text-sm text-gray-300 font-medium">
                     <span class="flex items-center gap-1"><i class="fa-solid fa-clock text-primary"></i> 2026</span>
                     <span class="hidden sm:inline">|</span>
-                    <span class="flex items-center gap-1"><i class="fa-solid fa-star text-gold"></i>  5.8 (30K) IMDB</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-star text-gold"></i>  5.8 (30K) IMDB</span>
                     <span class="hidden sm:inline">|</span>
                     <span class="flex items-center gap-1 w-full sm:w-auto mt-1 sm:mt-0 justify-center"><i class="fa-solid fa-film text-primary"></i> Horror, Mystery</span>
                 </div>
@@ -87,7 +87,7 @@
         <div class="mt-12 md:mt-16" data-aos="fade-up" data-aos-delay="200">
             <h3 class="text-lg md:text-xl font-bold mb-4 md:mb-6 border-l-4 border-primary pl-3">Screenshots</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                <img src=https://image.tmdb.org/t/p/w300/xVFrUxxJC5r8XL8QtkHcUyEeLvT.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
+                <img src="https://image.tmdb.org/t/p/w300/xVFrUxxJC5r8XL8QtkHcUyEeLvT.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
                 <img src="https://image.tmdb.org/t/p/w300/hz7TdCrpLLt2Dz7S3PS2HG9rpAO.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
                 <img src="https://image.tmdb.org/t/p/w300/yWCZc2TcsCYbMMjvUIsczmQi2TX.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
                 <img src="https://image.tmdb.org/t/p/w300/6Gguj3y7mropdvCag7bB6ZZAfHi.jpg" class="rounded-xl object-cover h-20 sm:h-24 md:h-32 w-full hover:scale-105 transition duration-300 border border-white/10 shadow-lg">
@@ -98,7 +98,7 @@
             <div class="glass-card p-5 sm:p-8 rounded-3xl text-center relative overflow-hidden">
                 <div class="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 blur-3xl rounded-full pointer-events-none"></div>
                 
-                <div id="section_askNumber" class="ui-section">
+                <div id="section_askNumber" class="ui-section active">
                     <h2 class="text-xl md:text-2xl font-bold mb-1 md:mb-2">WhatsApp ඔස්සේ ලබාගන්න</h2>
                     <p class="text-gray-400 text-xs md:text-sm mb-5 md:mb-6">ඔබගේ WhatsApp අංකය ඇතුලත් කරන්න.</p>
                     <input type="tel" id="input_waNumber" placeholder="947xxxxxxxx" class="w-full bg-black/60 border border-white/10 text-white px-4 py-3.5 md:py-4 rounded-xl text-center font-bold tracking-widest text-base md:text-lg mb-4 placeholder:text-gray-600">
@@ -133,7 +133,7 @@
                 </div>
 
                 <div id="section_process" class="ui-section">
-                    <div id="vip_banner" class="mb-5 md:mb-6 bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 p-3 md:p-4 rounded-xl">
+                    <div id="vip_banner" class="hidden mb-5 md:mb-6 bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 p-3 md:p-4 rounded-xl">
                         <i class="fa-solid fa-crown text-2xl md:text-3xl text-gold mb-1 md:mb-2 drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]"></i>
                         <h3 class="font-bold text-gold text-base md:text-lg">VIP අවසරය ලබාදෙන ලදි!</h3>
                     </div>
@@ -211,6 +211,9 @@
         const BOT_URL = "https://api.moviestream.lat"; 
         const MOVIE_NAME = "Scream 7"; 
         const MOVIE_LINK = "https://dl.springsfern.in/dl/AAAAAdURLsdF6eirAAAHFw/ycUy6AG1G1ATWAwWUW1yOSy8W7_PgU4x3hzthc3oKLM";
+        
+        // --- VIP Numbers Exact Check ---
+        const VIP_NUMBERS = ["94710388481", "94702409932"];
 
         let currentUser = "";
         let currentNumber = "";
@@ -225,7 +228,6 @@
         });
 
         socket.on('disconnect', () => {
-            console.warn("⚠️ Bot Live Connection Lost!");
             const dlState = localStorage.getItem('dl_state_' + MOVIE_NAME);
             if (dlState === 'processing') {
                 const s = document.getElementById('status_text');
@@ -253,6 +255,18 @@
             }
         }
 
+        // --- Logic to accurately show or hide VIP banner ---
+        function checkVIPUI(number) {
+            const banner = document.getElementById('vip_banner');
+            const cleanNum = number.toString().replace(/\D/g, ''); // Remove symbols for check
+            
+            if (VIP_NUMBERS.includes(cleanNum)) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
         window.onload = () => {
             const savedName = localStorage.getItem('kavi_user_name');
             const savedNum = localStorage.getItem('kavi_user_num');
@@ -265,6 +279,7 @@
                 document.getElementById('display_phone').innerText = "+" + savedNum;
                 
                 if (dlState === 'processing') {
+                    checkVIPUI(currentNumber);
                     switchState('section_process', true);
                     
                     fetch(`${BOT_URL}/check-status?number=${currentNumber}&movieName=${encodeURIComponent(MOVIE_NAME)}`)
@@ -275,7 +290,6 @@
                                 showSuccessPersistent();
                             } else if (data.status === "Error") {
                                 localStorage.removeItem('dl_state_' + MOVIE_NAME);
-                                // මෙතැනදී Cancel පණිවිඩය පෙන්වයි
                                 document.getElementById('status_text').innerHTML = "<i class='fa-solid fa-circle-xmark text-2xl md:text-3xl text-red-500 mb-2 md:mb-3 block'></i><span class='text-red-400'>ඔබ විසින් සාර්ථකව අවලංගු කරන ලදි.</span>";
                                 document.getElementById('btn_cancel_main').style.display = 'none';
                             } else {
@@ -297,7 +311,9 @@
         };
 
         function handleNumberSubmit() {
-            let num = document.getElementById('input_waNumber').value.replace(/\D/g, '');
+            let numInput = document.getElementById('input_waNumber').value;
+            let num = numInput.replace(/\D/g, ''); 
+            
             if (num.length < 9) {
                 alert("කරුණාකර නිවැරදි WhatsApp අංකයක් ඇතුලත් කරන්න.");
                 return;
@@ -336,6 +352,7 @@
         }
 
         function showVIPStatus() {
+            checkVIPUI(currentNumber);
             switchState('section_process');
             startDownload();
         }
@@ -377,7 +394,6 @@
                     showSuccessPersistent(); 
                 } else if (data.status === "Error") {
                     localStorage.removeItem('dl_state_' + MOVIE_NAME);
-                    // මෙතැනදීත් Cancel පණිවිඩය පෙන්වයි
                     document.getElementById('status_text').innerHTML = "<i class='fa-solid fa-circle-xmark text-2xl md:text-3xl text-red-500 mb-2 md:mb-3 block'></i><span class='text-red-400'>ඔබ විසින් සාර්ථකව අවලංගු කරන ලදි.</span>";
                     document.getElementById('btn_cancel_main').style.display = 'none';
                 } else {
@@ -397,7 +413,7 @@
         }
 
         function showSuccessPersistent() {
-            document.getElementById('vip_banner').style.display = 'none';
+            checkVIPUI(currentNumber);
             const s = document.getElementById('status_text');
             if(s) {
                 s.innerHTML = `
@@ -450,7 +466,6 @@
                     await fetch(`${BOT_URL}/cancel?number=${currentNumber}&movieName=${encodeURIComponent(MOVIE_NAME)}`); 
                 }
             } catch(e) {}
-            // පණිවිඩය බලාගැනීමට තත්පර 3ක් ඉඩ දී Reload කරයි
             setTimeout(() => location.reload(), 3000);
         }
 
