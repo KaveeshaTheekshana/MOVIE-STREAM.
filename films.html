@@ -84,7 +84,7 @@
         /* --- Main Content --- */
         main { padding: 40px 6%; transition: 0.5s; flex-grow: 1; }
 
-        /* PC Screen එකේ හරහට 5ක් පෙන්වීමට මම මේක Update කළා */
+        /* PC Screen 5 Cards */
         .film-grid { 
             display: grid; 
             grid-template-columns: repeat(5, 1fr); 
@@ -96,6 +96,7 @@
         .film-card {
             background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border);
             overflow: hidden; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); position: relative;
+            z-index: 1;
         }
         .film-card:hover { transform: translateY(-10px); border-color: rgba(255, 0, 60, 0.5); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
         .poster { width: 100%; aspect-ratio: 2/3; overflow: hidden; position: relative; }
@@ -122,25 +123,16 @@
 
         /* --- Effects --- */
         .is-blur { filter: blur(15px); opacity: 0.1; transform: scale(0.85); pointer-events: none; }
-        .highlight { transform: scale(1.1) !important; border-color: var(--accent); z-index: 100; box-shadow: 0 0 50px rgba(255, 0, 60, 0.4); }
+        .highlight { transform: scale(1.1) !important; border-color: var(--accent) !important; z-index: 100 !important; box-shadow: 0 0 50px rgba(255, 0, 60, 0.4) !important; }
 
         /* Responsive Settings */
-        @media (max-width: 1200px) {
-            .film-grid { grid-template-columns: repeat(4, 1fr); } 
-        }
-
-        @media (max-width: 992px) {
-            .film-grid { grid-template-columns: repeat(3, 1fr); } 
-        }
-
+        @media (max-width: 1200px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 992px) { .film-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
             .film-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; } 
             .genre-btn { padding: 8px 15px; font-size: 0.7rem; }
         }
-
-        @media (max-width: 480px) {
-            .film-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } 
-        }
+        @media (max-width: 480px) { .film-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 
         /* --- Footer --- */
         footer { background: #050505; border-top: 1px solid rgba(0, 229, 255, 0.2); padding: 40px 20px; text-align: center; margin-top: auto; }
@@ -175,6 +167,7 @@
             <button class="genre-btn" data-genre="action">Action</button>
             <button class="genre-btn" data-genre="horror">Horror</button>
             <button class="genre-btn" data-genre="romantic">Romantic</button>
+            <button class="genre-btn" data-genre="drama">Drama</button>
         </div>
 
         <div class="film-grid" id="filmGrid">
@@ -197,7 +190,7 @@
                 </div>
             </div>
 
-            <div class="film-card" data-title="Lucky Superstar" data-genre="romantic">
+            <div class="film-card" data-title="Lucky Superstar" data-genre="drama">
                 <div class="poster"><img src="https://cinesubz.net/wp-content/uploads/2026/02/fb5ao0wON2Dq3atOy3rikyL8IsP.jpg" alt="Lucky"></div>
                 <div class="card-details">
                     <h3>Lucky Superstar</h3>
@@ -224,42 +217,14 @@
                 </div>
             </div>
 
-
-
-              <div class="film-card" data-title="Avatar: Fire and Ash" data-genre="Action">
+            <div class="film-card" data-title="Avatar: Fire and Ash" data-genre="action">
                 <div class="poster"><img src="https://i.pinimg.com/736x/71/3a/ab/713aab78d2a2e2e60228e3c9bb7e9687.jpg" alt="Avatar: Fire and Ash"></div>
                 <div class="card-details">
                     <h3>Avatar: Fire and Ash </h3>
-                    <div class="meta-info"><span class="year">2025</span><span>Adventure</span><span>English</span><span>English</span><span>Fantasy</span><span>Science Fiction</span><span>Sinhala Sub</span></div>
+                    <div class="meta-info"><span class="year">2025</span><span>English</span><span>Fantasy</span><span>Sinhala Sub</span></div>
                     <a href="Avatar_page copy.html" class="btn-download-normal">Download</a>
                 </div>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         </div>
     </main>
@@ -283,7 +248,6 @@
         const filmCards = document.querySelectorAll('.film-card');
         const genreBtns = document.querySelectorAll('.genre-btn');
 
-        // Search Suggestions Logic
         searchInput.addEventListener('input', () => {
             const val = searchInput.value.toLowerCase().trim();
             suggestionBox.innerHTML = '';
@@ -309,19 +273,13 @@
             performSearch();
         });
 
-        // Genre Filter Logic
         genreBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 genreBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const genre = btn.dataset.genre;
-                
                 filmCards.forEach(card => {
-                    if (genre === 'all' || card.dataset.genre === genre) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                    card.style.display = (genre === 'all' || card.dataset.genre === genre) ? 'block' : 'none';
                 });
             });
         });
@@ -329,18 +287,32 @@
         function performSearch() {
             const query = searchInput.value.toLowerCase().trim();
             clearBtn.style.display = query ? "block" : "none";
+            
+            let firstMatch = null;
+
             filmCards.forEach(card => {
                 const title = card.dataset.title.toLowerCase();
                 if (!query) {
                     card.classList.remove('is-blur', 'highlight');
+                    card.style.zIndex = "1";
                 } else if (title.includes(query)) {
                     card.classList.remove('is-blur');
                     card.classList.add('highlight');
+                    card.style.zIndex = "100";
+                    if (!firstMatch) firstMatch = card;
                 } else {
                     card.classList.add('is-blur');
                     card.classList.remove('highlight');
+                    card.style.zIndex = "1";
                 }
             });
+
+            if (firstMatch && query.length > 1) {
+                firstMatch.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
         }
 
         clearBtn.addEventListener('click', () => {
