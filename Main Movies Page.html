@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Movie Stream | Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700;800&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        // =====================================================================
+        // 🔴 මෙතනින් පහළ තියෙන දේවල් තමයි අලුතින් ෆිල්ම් දාද්දි වෙනස් කරන්න ඕනේ 🔴
+        const FEATURED_MOVIE = {
+            title: "With Love (2026)", 
+            tags: "ACTION | THRILLER | CRIME", 
+            description: "කතාව ඉදිරියට යද්දී, ඔවුන් තමන්ගේ past feelings සහ අකමැතිව තිබූ ආදරය ගැන හිතන්න පටන් ගනී. මේ අතර friendship, love සහ second chances වැනි තේමා කතාව තුළ දැක්වෙයි. “With Love” කියන්නේ simple, feel-good romantic film එකක් වන අතර, ආදරය සහ ජීවිතයේ තීරණ ගැන ලස්සන පණිවිඩයක් ලබා දෙන චිත්‍රපටයක් වේ.",
+            image: "https://venkatarangan.com/wp-content/uploads/2026/02/with-love-2026.jpg", 
+            url: "With Love (2026).html" 
+        };
+
+        const MOVIE_CATEGORIES = [
+            {
+                categoryTitle: "❤ ආදරණීය",
+                allUrl: "Categories Lovely.html", 
+                movies: [
+                    { name: "With Love", img: "https://i.pinimg.com/1200x/53/c1/b3/53c1b328675424f0a380118a919a0b89.jpg", url: "With Love (2026).html" },
+                    { name: "Money Heist", img: "https://m.media-amazon.com/images/M/MV5BODI0ZTljYTEtOTQ1MS00YTI1LWI2ZTEtZDRjY2ExN2VlMmE0XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg", url: "money-heist.html" },
+                    { name: "Wednesday", img: "https://m.media-amazon.com/images/M/MV5BMjMwOTA4NDctNDM4OS00MDU1LWFjNzItMjdlMzQ5YzEwMGM4XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_.jpg", url: "wednesday.html" },
+                    { name: "Squid Game", img: "https://m.media-amazon.com/images/M/MV5BYWE3MDVkN2ItZTI5NC00ZGIzLThmY2UtNjYwMTBhOTUyYmI4XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_.jpg", url: "squid-game.html" },
+                    { name: "Lucifer", img: "https://m.media-amazon.com/images/M/MV5BNDJjMzc4NGYtZmFmNS00Y2ZiLThjMWQtZDA2MWExYTM5Y2Y4XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg", url: "lucifer.html" }
+                ]
+            },
+            {
+                categoryTitle: "🎬 අලුත්ම ක්‍රියාදාම",
+                allUrl: "action-all.html",
+                movies: [
+                    { name: "Akhanda 1", img: "https://cinesubz.net/wp-content/uploads/2022/01/g841pE2duYUJDUsy6i2NXqCzVBO.jpg", url: "Akhanda 1.html" },
+                    { name: "Akhanda 2", img: "https://cinesubz.net/wp-content/uploads/2026/01/jo9efbQSGDZNQ6xMocyD1prFjdF.jpg", url: "Akhanda 2.html" },
+                    { name: "The Batman", img: "https://m.media-amazon.com/images/M/MV5BMDdmMTBiNTYtMDIzNi00NGVlLWIzMDYtZTk3MTQ3NGQxZGEwXkEyXkFqcGdeQXVyMzMwOTU5MDk@._V1_.jpg", url: "the-batman.html" },
+                    { name: "Top Gun", img: "https://m.media-amazon.com/images/M/MV5BZjRjOTFkOTktZWUzMi00YzMyLThkMmYtMjEwNmQyNzliYTNmXkEyXkFqcGdeQXVyNzQ1ODk3MTQ@._V1_.jpg", url: "top-gun.html" }
+                ]
+            },
+            {
+                categoryTitle: "👻 හොල්මන් හා ත්‍රාසජනක",
+                allUrl: "horror-all.html",
+                movies: [
+                    { name: "The Nun II", img: "https://m.media-amazon.com/images/M/MV5BMjA3YjczMjUtNDViMC00YWE2LTkyZWItNDM4ZTcwNzQ4NDkxXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_.jpg", url: "nun-2.html" },
+                    { name: "Evil Dead Rise", img: "https://m.media-amazon.com/images/M/MV5BMmZiN2VmMjktZDE5OC00ZWRmLWFlZWYtNWNhYWU3YmJiOGRlXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_.jpg", url: "evil-dead.html" },
+                    { name: "Smile", img: "https://m.media-amazon.com/images/M/MV5BZjE2ZWIwMWEtNGFlMy00ZjYzLWEzOWEtYzQ0MDAwZDRhYzNjXkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_.jpg", url: "smile.html" },
+                    { name: "IT", img: "https://m.media-amazon.com/images/M/MV5BZDVkZmI0YzAtNzdjYi00ZjRhLWI4ZjMtOGYyYjFmMTEzMDJiXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg", url: "it.html" }
+                ]
+            },
+            {
+                categoryTitle: "😂 විකට සහ විනෝදාත්මක",
+                allUrl: "comedy-all.html",
+                movies: [
+                    { name: "Mr. Bean's Holiday", img: "https://m.media-amazon.com/images/M/MV5BMTg4NzI4NDk1OF5BMl5BanBnXkFtZTcwMTM5MTE0MQ@@._V1_.jpg", url: "mr-bean.html" },
+                    { name: "Hangover", img: "https://m.media-amazon.com/images/M/MV5BNGQwZjg5YmYtY2VkNC00YWZlLThmZjMtMDI0NmU2MjZhMjk0XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg", url: "hangover.html" },
+                    { name: "Deadpool", img: "https://m.media-amazon.com/images/M/MV5BYzE5MjY1ZDgtMTkyNC00MTMyLThhOTEtZGI1MWJiM2QxODg5XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg", url: "deadpool.html" },
+                    { name: "Free Guy", img: "https://m.media-amazon.com/images/M/MV5BOTY2NzFjODctOWUzMC00MGZhLTlhNjMtM2Y2ODBiNGY1ZWRiXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_.jpg", url: "free-guy.html" }
+                ]
+            },
+            {
+                categoryTitle: "👽 විද්‍යා ප්‍රබන්ධ (Sci-Fi)",
+                allUrl: "scifi-all.html",
+                movies: [
+                    { name: "Interstellar", img: "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg", url: "interstellar.html" },
+                    { name: "Inception", img: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg", url: "inception.html" },
+                    { name: "Avatar", img: "https://m.media-amazon.com/images/M/MV5BMjEyOTYyMzUxNl5BMl5BanBnXkFtZTcwNTg0MTUzNA@@._V1_.jpg", url: "avatar.html" },
+                    { name: "The Matrix", img: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg", url: "matrix.html" }
+                ]
+            }
+        ];
+
+        const ADDITIONAL_SEARCH_MOVIES = [
+            { name: "Dark", img: "https://m.media-amazon.com/images/M/MV5BMzA2NDkwNjAwNV5BMl5BanBnXkFtZTgwNTA2OTg5NDM@._V1_.jpg", url: "dark.html" },
+            { name: "The Witcher", img: "https://m.media-amazon.com/images/M/MV5BMTQ5MzkzNTIyN15BMl5BanBnXkFtZTgwNDMwNzYxMTE@._V1_.jpg", url: "witcher.html" }
+        ];
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Roboto', 'Noto Sans Sinhala', 'sans-serif'] },
+                    colors: { netflix_red: '#E50914', dark_bg: '#050505' },
+                    animation: { 'zoom-in': 'zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' },
+                    keyframes: { zoomIn: { '0%': { transform: 'scale(0.8)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } } }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; user-select: none; }
+        .hero-bg { background-size: cover; background-position: top center; height: 75dvh; min-height: 550px; position: relative; }
+        .hero-overlay { background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.6) 60%, rgba(5,5,5,0) 100%), linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0) 30%); height: 100%; width: 100%; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .movie-card { transition: transform 0.3s ease, border-color 0.3s ease; }
+        .movie-card:hover { transform: scale(1.08); z-index: 20; border-color: rgba(229, 9, 20, 0.8); box-shadow: 0 15px 35px rgba(229, 9, 20, 0.4); }
+        .play-icon { opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .movie-card:hover .play-icon { opacity: 1; transform: scale(1); }
+    </style>
+</head>
+<body class="font-sans antialiased" oncontextmenu="return false;">
+
+    <nav class="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-16 py-4 md:py-6 bg-gradient-to-b from-black/95 via-black/80 to-transparent">
+        <div class="flex items-center gap-3 md:gap-6">
+            <a href="index.html" class="text-xl md:text-3xl font-black uppercase tracking-tighter flex items-center cursor-pointer hover:scale-105 transition-transform">
+                <span class="text-white">Movie</span><span class="text-netflix_red">Stream</span>
+            </a>
+            <div id="user_display" class="hidden text-[10px] md:text-sm font-bold bg-white/10 px-3 py-1.5 rounded-full border border-white/20 shadow-lg ml-1 md:ml-2">
+                <i class="fa-solid fa-user text-netflix_red mr-1.5"></i> <span id="display_name" class="tracking-wide"></span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3 md:gap-4">
+            <div class="relative z-50 flex items-center group">
+                <i class="fa-solid fa-search absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs md:text-sm"></i>
+                <input type="text" id="nav_search" autocomplete="off" oninput="performSearch(this.value)" placeholder="Search Movies..." class="bg-white/10 border border-white/20 text-white text-[10px] md:text-xs font-bold rounded-2xl py-2 md:py-2.5 pl-8 md:pl-10 pr-8 md:pr-10 outline-none focus:border-netflix_red focus:bg-black/90 focus:rounded-b-none w-32 sm:w-48 transition-all placeholder-gray-400 shadow-lg">
+                <i id="clear_search_btn" class="fa-solid fa-circle-xmark absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hidden hover:text-netflix_red transition-colors text-xs md:text-sm z-50" onclick="clearSearch()"></i>
+                <ul id="search_suggestions" class="absolute top-[105%] left-0 w-full sm:w-[150%] bg-[#111] border border-gray-700 border-t-0 rounded-b-2xl shadow-[0_15px_40px_rgba(0,0,0,0.8)] hidden max-h-48 overflow-y-auto z-[100] hide-scrollbar py-1"></ul>
+            </div>
+            <a href="whatsapp://send?phone=94710388481" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-netflix_red flex items-center justify-center hover:scale-110 transition-transform cursor-pointer shadow-[0_0_10px_rgba(229,9,20,0.5)]">
+                <i class="fa-solid fa-headset text-white text-xs md:text-sm"></i>
+            </a>
+        </div>
+    </nav>
+
+    <div id="hero" class="hero-bg cursor-pointer" onclick="window.location.href=FEATURED_MOVIE.url">
+        <div class="hero-overlay flex flex-col justify-end pb-16 md:justify-center pt-28 px-5 md:px-16">
+            <div class="max-w-2xl space-y-3 md:space-y-4 w-full animate-[fadeIn_1s_ease-in-out]">
+                
+                <div class="flex items-center gap-2 bg-netflix_red/20 border border-netflix_red/50 w-fit px-3 md:px-4 py-1 md:py-1.5 rounded-sm mb-2 shadow-[0_0_15px_rgba(229,9,20,0.4)] backdrop-blur-sm">
+                    <i class="fa-solid fa-fire text-netflix_red text-xs md:text-sm animate-pulse"></i>
+                    <span class="text-[10px] md:text-xs font-black tracking-widest text-white">මේ දවස්වල Trending Movie එක</span>
+                </div>
+
+                <p id="hero_tags" class="text-[9px] md:text-xs font-bold tracking-[0.3em] text-netflix_red uppercase drop-shadow-md"></p>
+                <h1 id="hero_title" class="text-5xl sm:text-6xl md:text-8xl font-black drop-shadow-2xl leading-tight tracking-normal text-white"></h1>
+                
+                <div class="h-20 md:h-24 overflow-hidden">
+                    <p id="hero_desc" class="text-gray-300 text-xs md:text-base leading-relaxed line-clamp-3 md:line-clamp-4 drop-shadow-md font-semibold max-w-xl"></p>
+                </div>
+                
+                <div class="pt-2 md:pt-4">
+                    <button onclick="window.location.href=FEATURED_MOVIE.url; event.stopPropagation();" class="bg-white text-black px-8 md:px-12 py-3 md:py-4 rounded-xl font-black flex items-center justify-center gap-3 hover:bg-netflix_red hover:text-white transition-all active:scale-95 shadow-2xl text-xs md:text-sm w-full sm:w-auto">
+                        <i class="fa-solid fa-play text-lg md:text-xl"></i> <span>WATCH NOW</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalog_container" class="px-5 md:px-16 pb-20 relative z-40 space-y-8 md:space-y-12 mt-6"></div>
+
+    <footer class="bg-[#080808] py-8 md:py-10 px-5 text-center border-t border-white/5 space-y-3">
+        <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed max-w-3xl mx-auto">
+            <b class="text-netflix_red">අයිතිය පිළිබඳ දැනුවත් කිරීම:</b> මෙම වෙබ් අඩවිය හරහා ලබාදෙන චිත්‍රපට වල සම්පූර්ණ අයිතිය Cinesubz.net වෙත හිමිවන අතර, අප මෙය නිර්මාණය කළේ ඔබට WhatsApp හරහා පහසුවෙන් චිත්‍රපට ලබා ගැනීමටයි.
+        </p>
+        <p class="text-[9px] md:text-[10px] uppercase font-bold tracking-[0.3em] text-gray-600 pt-2">Movie Cinema © 2026 | Powered by Kaveesha Theekshana</p>
+    </footer>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        let AllMoviesMasterList = [];
+
+        window.onload = () => {
+            document.getElementById('hero').style.backgroundImage = `url('${FEATURED_MOVIE.image}')`;
+            document.getElementById('hero_title').innerText = FEATURED_MOVIE.title;
+            document.getElementById('hero_tags').innerText = FEATURED_MOVIE.tags;
+            document.getElementById('hero_desc').innerText = FEATURED_MOVIE.description;
+
+            AllMoviesMasterList.push({ name: FEATURED_MOVIE.title.replace(':', ''), img: FEATURED_MOVIE.image, url: FEATURED_MOVIE.url });
+            MOVIE_CATEGORIES.forEach(cat => cat.movies.forEach(mov => {
+                if(!AllMoviesMasterList.find(m => m.name === mov.name)) AllMoviesMasterList.push(mov);
+            }));
+
+            renderCategoriesUI();
+            const name = localStorage.getItem('kavi_user_name');
+            if (name) {
+                document.getElementById('user_display').classList.remove('hidden');
+                document.getElementById('display_name').innerText = name;
+            }
+        };
+
+        function renderCategoriesUI() {
+            const container = document.getElementById('catalog_container');
+            container.innerHTML = '';
+            MOVIE_CATEGORIES.forEach(category => {
+                let html = `
+                    <div class="space-y-2 md:space-y-4">
+                        <div class="flex justify-between items-center pr-2 md:pr-10">
+                            <h3 class="text-sm md:text-lg font-black tracking-widest text-white drop-shadow-md">${category.categoryTitle}</h3>
+                            <a href="${category.allUrl}" class="text-[10px] md:text-xs font-bold text-gray-400 hover:text-white border border-white/20 px-3 py-1 md:py-1.5 rounded-full uppercase tracking-wider flex items-center gap-1">See All <i class="fa-solid fa-chevron-right text-[8px]"></i></a>
+                        </div>
+                        <div class="flex gap-3 md:gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x snap-mandatory">
+                `;
+                category.movies.forEach(movie => {
+                    html += `
+                        <div onclick="window.location.href='${movie.url}'" class="movie-card snap-start shrink-0 w-[110px] md:w-[160px] lg:w-[200px] aspect-[2/3] rounded-xl overflow-hidden border border-white/10 relative cursor-pointer group bg-dark_bg">
+                            <img src="${movie.img}" class="w-full h-full object-cover" loading="lazy">
+                            <div class="absolute inset-0 bg-black/40 md:opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end items-center p-3">
+                                <div class="play-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-netflix_red rounded-full flex items-center justify-center"><i class="fa-solid fa-play text-white ml-1"></i></div>
+                                <p class="text-[9px] md:text-xs font-bold text-center text-white drop-shadow-md truncate w-full">${movie.name}</p>
+                            </div>
+                        </div>`;
+                });
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function performSearch(query) {
+            query = query.toLowerCase().trim();
+            const suggestionsBox = document.getElementById('search_suggestions'); 
+            const searchInput = document.getElementById('nav_search');
+            const clearBtn = document.getElementById('clear_search_btn');
+            if (query !== '') clearBtn.classList.remove('hidden'); else clearBtn.classList.add('hidden');
+            if (query === '') { suggestionsBox.classList.add('hidden'); renderCategoriesUI(); return; }
+            const filteredMovies = AllMoviesMasterList.filter(m => m.name.toLowerCase().includes(query));
+            if (filteredMovies.length > 0) {
+                suggestionsBox.classList.remove('hidden');
+                suggestionsBox.innerHTML = filteredMovies.map(m => `<li onclick="window.location.href='${m.url}'" class="px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800 cursor-pointer text-[10px] md:text-xs truncate border-b border-white/5 last:border-0">${m.name}</li>`).join('');
+            } else suggestionsBox.classList.add('hidden');
+            renderSearchResultsGrid(filteredMovies);
+        }
+
+        function renderSearchResultsGrid(movies) {
+            const container = document.getElementById('catalog_container');
+            if (movies.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-gray-500 font-bold">චිත්‍රපට හමුවූයේ නැත!</div>`;
+                return;
+            }
+            container.className = 'px-5 md:px-16 pb-20 grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-6 relative z-40';
+            container.innerHTML = movies.map(movie => `
+                <div onclick="window.location.href='${movie.url}'" class="movie-card w-full aspect-[2/3] rounded-xl overflow-hidden border border-white/10 relative cursor-pointer group bg-dark_bg animate-zoom-in">
+                    <img src="${movie.img}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/50 flex flex-col justify-end items-center p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="play-icon absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-netflix_red rounded-full flex items-center justify-center"><i class="fa-solid fa-play text-white ml-1"></i></div>
+                        <p class="text-[9px] font-bold text-white truncate w-full text-center">${movie.name}</p>
+                    </div>
+                </div>`).join('');
+        }
+
+        function clearSearch() { document.getElementById('nav_search').value = ''; performSearch(''); }
+
+        document.addEventListener('click', e => {
+            if (!document.getElementById('nav_search').contains(e.target)) document.getElementById('search_suggestions').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
