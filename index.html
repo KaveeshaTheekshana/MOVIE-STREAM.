@@ -29,10 +29,21 @@
             background-image: url('https://wallpapercave.com/wp/wp11089675.jpg'); 
             background-size: cover; 
             background-position: center; 
-            background-attachment: fixed; /* Parallax effect */
+            background-attachment: fixed; /* Parallax effect for Desktop */
             height: 100vh; 
             position: relative; 
+            background-repeat: no-repeat;
+            background-color: #050505; /* Load වෙනකන් පේන්න */
         }
+
+        /* Mobile Fix: ගැස්සීම වැළැක්වීමට සහ Performance වැඩි කිරීමට */
+        @media (max-width: 768px) {
+            .hero-bg { 
+                background-attachment: scroll !important; 
+                background-position: center center;
+            }
+        }
+
         .hero-overlay { 
             background: linear-gradient(to right, rgba(5,5,5,1) 0%, rgba(5,5,5,0.4) 60%, rgba(5,5,5,0) 100%), 
                         linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0) 40%); 
