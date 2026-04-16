@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MovieStream | Ultra 3D Mobile Edition</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@700;900&family=Noto+Sans+Sinhala:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        const TV_SERIES_DATA = {
+            seriesName: "BEAST",
+            seasons: [
+                {
+                    seasonName: "SEASON 01",
+                    episodes: [
+                        { epNum: "01", fullName: "BEAST - Season 1 Episode 1", link: "LINK_FOR_S01E01" },
+                        { epNum: "02", fullName: "BEAST - Season 1 Episode 2", link: "LINK_FOR_S01E02" },
+                        { epNum: "03", fullName: "BEAST - Season 1 Episode 3", link: "LINK_FOR_S01E03" },
+                        { epNum: "04", fullName: "BEAST - Season 1 Episode 4", link: "LINK_FOR_S01E04" },
+                        { epNum: "05", fullName: "BEAST - Season 1 Episode 5", link: "LINK_FOR_S01E05" }
+                    ]
+                },
+                {
+                    seasonName: "SEASON 02",
+                    episodes: [
+                        { epNum: "01", fullName: "BEAST - Season 2 Episode 1", link: "LINK_FOR_S02E01" },
+                        { epNum: "02", fullName: "BEAST - Season 2 Episode 2", link: "LINK_FOR_S02E02" }
+                    ]
+                }
+            ]
+        };
+    </script>
+
+    <style>
+        :root {
+            --neon-orange: #ff4500;
+            --neon-blue: #00f2ff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --netflix_red: #E50914;
+        }
+
+        body { background-color: #020202; color: white; overflow-x: hidden; scroll-behavior: smooth; font-family: 'Inter', sans-serif; user-select: none; -webkit-user-select: none; }
+        .font-sinhala { font-family: 'Noto Sans Sinhala', sans-serif; }
+
+        /* --- Header Adjustments --- */
+        header {
+            position: fixed; top: 0; width: 100%; padding: 15px 6%;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            background: linear-gradient(to bottom, rgba(2,2,2,0.9), transparent);
+        }
+        .logo { font-family: 'Poppins', sans-serif; font-size: clamp(16px, 4vw, 26px); font-weight: 900; letter-spacing: 2px; text-decoration: none; color: white; }
+        .logo span { color: var(--neon-orange); text-shadow: 0 0 15px var(--neon-orange); }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 100px 6% 20px 6%;
+            background: radial-gradient(circle at center, rgba(255, 69, 0, 0.1) 0%, #020202 70%),
+                        url('https://images.alphacoders.com/122/1224163.jpg') center/cover no-repeat;
+            text-align: center;
+        }
+
+        .hero-content { max-width: 600px; z-index: 10; margin-bottom: 20px; }
+        .hero-content h1 { font-family: 'Poppins', sans-serif; font-size: clamp(2.5rem, 12vw, 5rem); line-height: 1.1; margin: 15px 0; }
+        .hero-content p { color: #aaa; font-size: clamp(14px, 4vw, 16px); margin-bottom: 20px; line-height: 1.6; }
+
+        /* --- Advanced Robot Scroll Animation --- */
+        .robot-scroll-container {
+            margin-top: 20px; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center;
+            opacity: 0.8; transition: 0.3s;
+        }
+        .robot-scroll-container:hover { opacity: 1; transform: scale(1.1); }
+        .robot-icon {
+            font-size: 35px; color: white;
+            text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
+            animation: floatRobot 2s ease-in-out infinite;
+        }
+        .arrows-down { display: flex; flex-direction: column; margin-top: 5px; }
+        .arrows-down i {
+            color: var(--neon-blue); font-size: 18px; margin: -6px 0;
+            animation: arrowPulse 1.5s infinite; text-shadow: 0 0 10px var(--neon-blue);
+        }
+        .arrows-down i:nth-child(2) { animation-delay: 0.2s; }
+        .arrows-down i:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes floatRobot {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes arrowPulse {
+            0% { opacity: 0; transform: translateY(-5px) scale(0.8); }
+            50% { opacity: 1; transform: translateY(0) scale(1.1); }
+            100% { opacity: 0; transform: translateY(10px) scale(0.8); }
+        }
+
+        /* --- 3D Carousel --- */
+        .gallery-wrapper { width: 100%; height: 250px; display: flex; justify-content: center; align-items: center; perspective: 1200px; z-index: 5; margin-bottom: 20px; }
+        .carousel { width: 180px; height: 110px; position: relative; transform-style: preserve-3d; animation: rotateCarousel 15s infinite linear; }
+        .carousel div { position: absolute; width: 100%; height: 100%; border: 2px solid var(--neon-blue); border-radius: 12px; overflow: hidden; box-shadow: 0 0 15px var(--neon-blue); background: #111; }
+        .carousel div:nth-child(1) { transform: rotateY(0deg) translateZ(220px); }
+        .carousel div:nth-child(2) { transform: rotateY(72deg) translateZ(220px); }
+        .carousel div:nth-child(3) { transform: rotateY(144deg) translateZ(220px); }
+        .carousel div:nth-child(4) { transform: rotateY(216deg) translateZ(220px); }
+        .carousel div:nth-child(5) { transform: rotateY(288deg) translateZ(220px); }
+        .carousel img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes rotateCarousel { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+        /* --- Series Section --- */
+        .series-container { padding: 60px 6%; background: #020202; }
+        .season-box { background: var(--glass); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 20px; margin-bottom: 30px; }
+        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+        .episode { background: #0a0a0a; height: 80px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; border: 1px solid #222; transition: 0.3s; }
+        .episode:hover { background: #151515; }
+        .episode:active { transform: scale(0.95); border-color: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
+        .episode span { font-size: 9px; opacity: 0.5; letter-spacing: 1px; }
+        .episode b { font-size: 18px; color: var(--neon-blue); }
+
+        @media (min-width: 768px) {
+            .hero { flex-direction: row; text-align: left; padding-top: 0; }
+            .hero-content { margin-bottom: 0; margin-right: 50px; }
+            .carousel { width: 250px; height: 150px; }
+            .carousel div:nth-child(1) { transform: rotateY(0deg) translateZ(320px); }
+            .carousel div:nth-child(2) { transform: rotateY(72deg) translateZ(320px); }
+            .carousel div:nth-child(3) { transform: rotateY(144deg) translateZ(320px); }
+            .carousel div:nth-child(4) { transform: rotateY(216deg) translateZ(320px); }
+            .carousel div:nth-child(5) { transform: rotateY(288deg) translateZ(320px); }
+            .episode-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .episode { height: 100px; }
+        }
+
+        /* --- Modals CSS --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.4s ease; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-card { background: rgba(20, 20, 20, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 2rem; transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); box-shadow: 0 40px 100px rgba(0,0,0,1); }
+        .modal-overlay.show .modal-card { transform: scale(1) translateY(0); }
+        .scan-line { position: absolute; left: 0; width: 100%; height: 60px; background: linear-gradient(to bottom, transparent, rgba(229, 9, 20, 0.3), transparent); animation: scan 3s linear infinite; pointer-events: none; }
+        @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>
+        <div class="flex items-center gap-3 md:gap-5">
+            <a href="Main Movies Page.html" class="text-white hover:text-[var(--neon-blue)] transition-colors text-xl md:text-2xl drop-shadow-lg">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <a href="Main Movies Page.html" class="logo">MOVIE<span>STREAM</span></a>
+        </div>
+
+        <div class="flex items-center gap-3 md:gap-4">
+            <a href="whatsapp://send?phone=94710388481&text=Hi,%20I%20want%20to%20report%20a%20bug." class="flex items-center bg-white/5 border border-white/10 hover:bg-[#E50914]/30 hover:border-[#E50914] text-white px-3 py-2 rounded-full transition-all text-[10px] md:text-xs font-black uppercase shadow-lg">
+                <i class="fa-solid fa-bug text-[#E50914] md:mr-2 text-sm"></i>
+                <span class="hidden md:inline font-sinhala tracking-widest">Bug Report</span>
+            </a>
+            
+            <div id="user_display" class="hidden text-[10px] md:text-xs font-bold bg-white/10 px-4 py-2 rounded-full border border-white/15">
+                <i class="fa-solid fa-user text-[var(--neon-blue)] mr-1"></i> <span id="display_name" class="text-white"></span>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p style="color: var(--neon-blue); letter-spacing: 3px; font-weight: 600; font-size: 12px;">PREMIUM STREAMING</p>
+            <h1>BEAST</h1>
+            <p>An elite spy is trapped in a hijacked mall. Experience the non-stop action thriller on your mobile screen with 4K HDR quality.</p>
+            
+            <div class="robot-scroll-container" onclick="document.getElementById('episodes_section').scrollIntoView({behavior: 'smooth'})">
+                <span class="text-[9px] md:text-[11px] font-sinhala font-bold tracking-[2px] uppercase text-[var(--neon-blue)] mb-2 block">කොටස් සඳහා පහළට යන්න</span>
+                <i class="fa-solid fa-robot robot-icon"></i>
+                <div class="arrows-down">
+                    <i class="fa-solid fa-chevron-down"></i>
+                    <i class="fa-solid fa-chevron-down"></i>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-wrapper">
+            <div class="carousel">
+                <div><img src="https://via.placeholder.com/300x200/111/ff4500?text=Shot+1" alt=""></div>
+                <div><img src="https://via.placeholder.com/300x200/111/00f2ff?text=Shot+2" alt=""></div>
+                <div><img src="https://via.placeholder.com/300x200/111/ff4500?text=Shot+3" alt=""></div>
+                <div><img src="https://via.placeholder.com/300x200/111/00f2ff?text=Shot+4" alt=""></div>
+                <div><img src="https://via.placeholder.com/300x200/111/ff4500?text=Shot+5" alt=""></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="episodes_section" class="series-container">
+        <h2 style="margin-bottom: 30px; font-size: 24px; letter-spacing: 1px;">EPISODES</h2>
+        <div id="seasons_wrapper">
+            </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; border-top: 1px solid #111; opacity: 0.3; font-size: 11px;">
+        &copy; 2026 MOVIESTREAM API INTEGRATED | POWERED BY DEVELOPER KAVEESHA
+    </footer>
+
+    <div id="modal_offline" class="modal-overlay"><div class="modal-card p-6 md:p-10 w-[92%] max-w-md text-center border-white/10 border shadow-2xl"><i class="fa-solid fa-server text-6xl text-[#E50914] mb-6"></i><h3 class="font-sinhala font-black text-lg md:text-2xl text-white mb-3 tracking-tighter">සන්නිවේදනය අසාර්ථකයි!</h3><p class="font-sinhala font-semibold text-xs md:text-sm text-gray-400 leading-relaxed mb-8">ප්‍රධාන පද්ධතිය සමඟ සන්නිවේදනය කිරීමට නොහැකි වී ඇත. පසුව උත්සාහ කරන්න.</p><div class="flex flex-col gap-3"><a href="whatsapp://send?phone=94710388481" class="w-full bg-[#E50914] text-white py-3 md:py-4 rounded-xl font-sinhala font-black text-sm uppercase flex items-center justify-center gap-3"><i class="fa-solid fa-headset"></i> සංවර්ධකයා අමතන්න</a><button onclick="closeModals()" class="w-full bg-white/5 text-white py-2.5 rounded-xl font-sinhala font-bold text-xs uppercase">ආපසු</button></div></div></div>
+    
+    <div id="modal_limit" class="modal-overlay"><div class="modal-card p-6 md:p-8 w-[92%] max-w-sm text-center relative border-[#E50914]/40 border-2 overflow-hidden"><div class="scan-line"></div><i class="fa-solid fa-bolt-lightning text-4xl text-[#E50914] mb-4 animate-pulse"></i><h3 class="font-sinhala font-black text-lg md:text-2xl uppercase text-[#E50914] mb-2">පද්ධති භාවිත සීමාව!</h3><p class="font-sinhala font-semibold text-xs md:text-sm text-gray-300 leading-relaxed mb-6">පද්ධතියේ වේගය පවත්වා ගැනීමට පැය 2ක් තුළ ලබාගත හැක්කේ ඉල්ලීම් 3ක් පමණි.</p><div class="bg-black/60 border border-white/10 rounded-xl py-4 mb-6"><span class="text-[9px] text-gray-500 uppercase font-black block mb-1">නැවත උත්සාහ කළ හැකි වේලාව</span><span id="limit_time_display" class="text-2xl font-black text-white tracking-[0.2em]">2h 0m</span></div><button onclick="closeModals()" class="w-full bg-white text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase">අවබෝධ විය</button></div></div>
+    
+    <div id="modal_error" class="modal-overlay"><div class="modal-card p-6 md:p-10 w-[92%] max-w-sm text-center border-[#E50914]/40 border-2"><i class="fa-solid fa-circle-exclamation text-5xl text-[#E50914] mb-4 animate-bounce"></i><h3 class="font-sinhala font-black text-xl text-[#E50914] mb-3 tracking-tighter uppercase">වැරදි අංකයකි!</h3><p id="error_msg" class="font-sinhala font-semibold text-xs md:text-sm text-gray-300 mb-8 leading-relaxed"></p><button onclick="showModal('modal_ask_num')" class="w-full bg-white text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase">නැවත උත්සාහ කරන්න</button></div></div>
+    
+    <div id="modal_confirm" class="modal-overlay"><div class="modal-card p-6 md:p-10 w-[92%] max-w-md text-center border-white/10 border"><i class="fa-solid fa-shield-halved text-5xl text-[#E50914] mb-4 animate-pulse"></i><h3 class="font-sinhala font-black text-xl md:text-2xl mb-4 uppercase text-white">අත්‍යවශ්‍ය පියවරකි!</h3><div class="bg-white/5 p-4 rounded-xl border border-white/10 text-left"><p class="font-sinhala font-bold text-sm text-gray-200 text-center">මෙය ලබා ගැනීමට නම් අපගේ අංකය ඔබගේ <span class="text-[#E50914] underline uppercase">දුරකථනයේ සුරැකීම</span> අනිවාර්ය වේ.</p></div><div class="flex flex-col gap-3 mt-6"><button id="send_bot_btn" onclick="sendToBot()" class="w-full bg-green-500 text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase flex items-center justify-center gap-3"><i class="fa-brands fa-whatsapp text-2xl"></i> හරි Message එක ආවම Save කරන්නම්</button><button onclick="showModal('modal_cancel')" class="w-full bg-white/5 text-gray-400 py-2 rounded-xl font-sinhala font-bold text-xs uppercase">එපා, මට මෙය එපා</button></div></div></div>
+    
+    <div id="modal_cancel" class="modal-overlay"><div class="modal-card p-8 md:p-12 w-[92%] max-w-sm text-center"><i class="fa-solid fa-face-sad-tear text-6xl text-gray-500 mb-6"></i><h3 class="font-sinhala font-black text-xl md:text-2xl mb-3 text-white">ඉල්ලීම අවලංගු කළා!</h3><p class="font-sinhala font-semibold text-xs text-gray-400 mb-8">ඔබේ ඉල්ලීම ඉවත් කරන ලදී.</p><button onclick="closeModals()" class="w-full bg-white text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase">නැවත මුලට</button></div></div>
+    
+    <div id="modal_ask_num" class="modal-overlay"><div class="modal-card p-6 md:p-10 w-[92%] max-w-sm text-center"><h3 class="font-sinhala font-black text-lg md:text-xl text-[#00f2ff] mb-6 tracking-widest uppercase">WHATSAPP අංකය</h3><input type="tel" id="in_num" placeholder="947XXXXXXX" class="w-full bg-white/5 border border-white/20 p-4 rounded-xl text-center font-black text-xl outline-none focus:border-[#00f2ff] mb-4 text-white"><div class="flex flex-col gap-3 mt-4"><button onclick="goToNameStep()" class="w-full bg-[#00f2ff] text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase">ඉදිරියට යන්න</button><button onclick="closeModals()" class="text-gray-500 text-sm font-black uppercase">පසුවට</button></div></div></div>
+    
+    <div id="modal_ask_name" class="modal-overlay"><div class="modal-card p-6 md:p-10 w-[92%] max-w-sm text-center"><h3 class="font-sinhala font-black text-lg md:text-xl text-[#00f2ff] mb-6 tracking-widest uppercase">ඔබේ නම</h3><input type="text" id="in_name" placeholder="ඔබේ නම..." class="w-full bg-white/5 border border-white/20 p-4 rounded-xl text-center font-black text-xl outline-none focus:border-[#00f2ff] mb-4 text-white"><div class="flex gap-3 mt-4"><button onclick="saveNewUser()" class="flex-[2] bg-[#00f2ff] text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase">සුරකින්න</button><button onclick="showModal('modal_ask_num')" class="flex-1 bg-white/5 text-gray-400 py-3 rounded-xl font-sinhala font-bold text-xs uppercase">ආපසු</button></div></div></div>
+    
+    <div id="modal_success" class="modal-overlay"><div class="modal-card p-8 md:p-12 w-[92%] max-w-sm text-center border-green-500/30 border-2"><i class="fa-solid fa-circle-check text-6xl text-green-500 mb-6 animate-bounce"></i><h3 class="font-sinhala font-black text-xl md:text-2xl text-green-500 mb-3 uppercase">සාර්ථකයි!</h3><p id="success_msg" class="font-sinhala font-semibold text-xs md:text-sm text-gray-400 mb-8 leading-relaxed"></p><button onclick="closeModals()" class="w-full bg-white text-black py-3 rounded-xl font-sinhala font-bold text-sm uppercase">නියමයි</button></div></div>
+    
+    <div id="modal_returning" class="modal-overlay"><div class="modal-card p-6 md:p-10 w-[92%] max-w-sm text-center"><h3 class="font-sinhala font-black text-lg md:text-2xl mb-2 text-white">නැවතත් පිළිගනිමු <br><span id="ret_name" class="text-[#00f2ff]"></span>!</h3><div id="ret_num" class="bg-black/50 py-4 px-4 rounded-xl border border-white/10 font-black text-[#00f2ff] text-xl mb-8 mt-4 tracking-widest"></div><div class="flex gap-3"><button onclick="showModal('modal_confirm')" class="flex-[2] bg-white text-black py-3 rounded-xl font-sinhala font-black text-sm uppercase shadow-xl">එවන්න</button><button onclick="changeUser()" class="flex-1 bg-white/5 text-white py-3 rounded-xl font-sinhala font-bold text-xs uppercase">වෙනස්</button></div></div></div>
+
+    <script>
+        // Security Logic
+        document.addEventListener('keydown', e => {
+            if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) || (e.ctrlKey && e.key === "u")) {
+                e.preventDefault(); return false;
+            }
+        });
+        document.addEventListener('dragstart', e => e.preventDefault());
+
+        let currentRequestName = ""; 
+        let currentRequestLink = ""; 
+
+        function showModal(id) { closeModals(); document.getElementById(id).classList.add('show'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show')); }
+
+        // Render Series Data Automatically from TV_SERIES_DATA Object
+        window.onload = () => { 
+            checkUser(); 
+            
+            const wrapper = document.getElementById('seasons_wrapper');
+            let htmlContent = "";
+
+            TV_SERIES_DATA.seasons.forEach(season => {
+                let episodesHtml = "";
+                season.episodes.forEach(ep => {
+                    episodesHtml += `
+                        <div class="episode" onclick="handleItemClick('${ep.fullName}', '${ep.link}')">
+                            <span>EPISODE</span><b>${ep.epNum}</b>
+                        </div>`;
+                });
+
+                htmlContent += `
+                    <div class="season-box">
+                        <p style="margin-bottom: 15px; font-size: 14px; font-weight: bold; color: var(--neon-orange); letter-spacing: 2px;">${season.seasonName}</p>
+                        <div class="episode-grid">
+                            ${episodesHtml}
+                        </div>
+                    </div>`;
+            });
+            wrapper.innerHTML = htmlContent;
+        };
+
+        // Handle Click (Saves exact Name & Link)
+        function handleItemClick(itemName, itemLink) { 
+            currentRequestName = itemName;
+            currentRequestLink = itemLink;
+
+            const name = localStorage.getItem('kavi_user_name'); 
+            const num = localStorage.getItem('kavi_user_num'); 
+            
+            if (name && num) { 
+                document.getElementById('ret_name').innerText = name; 
+                document.getElementById('ret_num').innerText = num; 
+                showModal('modal_returning'); 
+            } else { 
+                showModal('modal_ask_num'); 
+            } 
+        }
+
+        function goToNameStep() { 
+            let rawNum = document.getElementById('in_num').value.trim();
+            let num = rawNum.replace(/\D/g, ''); 
+            if (!num.startsWith('94')) {
+                document.getElementById('error_msg').innerText = "කරුණාකර Country Code එක (94) සමඟින් අංකය ඇතුළත් කරන්න. උදා: 947XXXXXXXX";
+                showModal('modal_error'); return;
+            }
+            if (num.length >= 11) { 
+                localStorage.setItem('kavi_user_num', num); 
+                showModal('modal_ask_name'); 
+            } else {
+                document.getElementById('error_msg').innerText = "කරුණාකර නිවැරදි දුරකථන අංකයක් ලබාදෙන්න.";
+                showModal('modal_error');
+            }
+        }
+
+        function saveNewUser() {
+            const name = document.getElementById('in_name').value.trim();
+            if (name) {
+                localStorage.setItem('kavi_user_name', name);
+                checkUser();
+                showModal('modal_confirm');
+            }
+        }
+
+        async function sendToBot() {
+            const btn = document.getElementById('send_bot_btn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> තහවුරු කරමින්...`;
+            btn.disabled = true;
+            
+            try {
+                // Here exactly the required details are sent to the bot API
+                const response = await fetch("https://api.moviestream.lat/send-movie", { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({
+                        number: localStorage.getItem('kavi_user_num'),
+                        userName: localStorage.getItem('kavi_user_name'),
+                        movieName: currentRequestName, 
+                        directLink: currentRequestLink 
+                    }) 
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('success_msg').innerText = `${localStorage.getItem('kavi_user_name')}, ඔබ ඉල්ලූ "${currentRequestName}" සාර්ථකව පද්ධතියට එක් කළා.`;
+                    showModal('modal_success');
+                } else if (response.status === 429) {
+                    document.getElementById('limit_time_display').innerText = data.wait || "2h 0m";
+                    showModal('modal_limit');
+                } else { showModal('modal_offline'); }
+            } catch (e) { showModal('modal_offline'); }
+            finally { btn.innerHTML = originalHTML; btn.disabled = false; }
+        }
+
+        function checkUser() {
+            const name = localStorage.getItem('kavi_user_name');
+            if (name) {
+                document.getElementById('user_display').classList.remove('hidden');
+                document.getElementById('display_name').innerText = name.split(' ')[0];
+            }
+        }
+        
+        function changeUser() { localStorage.clear(); location.reload(); }
+    </script>
+</body>
+</html>
