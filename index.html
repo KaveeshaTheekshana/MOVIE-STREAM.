@@ -14,12 +14,25 @@
     <link href="https://unpkg.com/videojs-netflix-theme@1.0.1/dist/videojs-netflix-theme.css" rel="stylesheet">
 
     <script>
+        // 🔒 Anti-Scraping & Site Protection (No lag on mobile)
+        document.addEventListener('contextmenu', e => e.preventDefault()); // Block Right Click
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // Block F12
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false; // Block Ctrl+Shift+I/C/J
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Block Ctrl+U
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Block Ctrl+S
+        }
+
         const API_BASE_URL = "https://api.moviestream.lat"; 
         
         const MOVIE_DATA = {
             poster: "https://cinesubz.net/wp-content/uploads/2022/01/g841pE2duYUJDUsy6i2NXqCzVBO.jpg", 
             title: "AKHANDA", 
+            tags: "Action • Drama • Devotional • Telugu",
+            year: "2021",
             duration: "2h 47m",
+            quality: "4K ULTRA HD",
+            rating: "8.1/10 IMDB",
             language: "Telugu (Sinhala Subtitles)",
             description: "Akhanda කියන්නේ action සහ devotional elements එකට එකතු වූ Telugu චිත්‍රපටයක් වන අතර, හොඳ හා නරක අතර සටනක් වටා කතාව ගොඩනැගෙයි. මේ කතාවේ Akhanda නම් බලවත් චරිතය සමාජයේ අසාධාරණය සහ දූෂණයට විරුද්ධව සටන් කරයි.",
             backdrop: "https://i.pinimg.com/736x/d9/f5/84/d9f584ae1e47ee835a03f266477e4718.jpg", 
@@ -36,80 +49,87 @@
         :root { --netflix-red: #E50914; }
         * { font-style: normal !important; -webkit-tap-highlight-color: transparent; }
         
-        body { background-color: #000; color: white; overflow-x: hidden; font-family: 'Roboto', 'Noto Sans Sinhala', sans-serif; scroll-behavior: smooth; }
+        body { background-color: #000; color: white; overflow-x: hidden; font-family: 'Roboto', 'Noto Sans Sinhala', sans-serif; scroll-behavior: smooth; user-select: none; }
         
-        .hero-section { position: relative; width: 100%; min-height: 100vh; background-size: cover; background-position: center; display: flex; align-items: center; padding: 100px 0 50px 0; }
-        .hero-overlay { background: linear-gradient(to right, #000 20%, rgba(0,0,0,0.4) 70%, transparent 100%), linear-gradient(to top, #000 5%, transparent 50%); position: absolute; inset: 0; }
+        .hero-section { position: relative; width: 100%; min-height: 95dvh; background-size: cover; background-position: center; display: flex; align-items: center; }
+        .hero-overlay { background: linear-gradient(to right, #000 15%, rgba(0,0,0,0.3) 60%, transparent 100%), linear-gradient(to top, #000 0%, transparent 40%); position: absolute; inset: 0; }
 
+        /* ✨ Movie Title Original Custom Style */
         #movie_title {
             font-weight: 900; letter-spacing: -3px; line-height: 0.9; text-transform: uppercase;
             background: linear-gradient(to bottom, #ffffff 50%, #888888 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.9));
+            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.9)); word-wrap: break-word;
         }
 
-        /* 🖼️ Screenshots UI */
-        .ss-card { border-radius: 8px; overflow: hidden; border: 1px solid #222; transition: 0.4s ease; background: #111; }
-        .ss-card:hover { border-color: var(--netflix-red); transform: scale(1.05); }
+        @media (max-width: 768px) {
+            #movie_title { font-size: 3.8rem !important; letter-spacing: -2px; }
+        }
+
+        .video-js { width: 100%; max-width: 1000px; aspect-ratio: 16/9; border-radius: 8px; margin: 0 auto; box-shadow: 0 0 50px rgba(229, 9, 20, 0.4); }
+        #video_display_area { display: none; padding: 40px 0; background: #000; border-bottom: 1px solid #111; }
+
+        .btn-play { background: #fff; color: #000; transition: 0.3s; font-weight: 900; border-radius: 4px; border: none; outline: none; }
+        .btn-play:hover { background: var(--netflix-red); color: #fff; transform: scale(1.05); }
+
+        .btn-whatsapp { background: #25D366; transition: 0.3s; border-radius: 4px; border: none; outline: none; }
+        .btn-whatsapp:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+        .poster-img { width: 220px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.9); }
+        
+        .ss-card { border-radius: 6px; overflow: hidden; border: 1px solid #222; transition: 0.4s ease; background: #111; cursor: pointer; }
+        .ss-card:hover { border-color: var(--netflix-red); transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .ss-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: 0.8; transition: 0.4s; }
         .ss-card:hover img { opacity: 1; }
 
-        /* 🎬 Movie Cards UI */
-        #more_movies_section { display: block; } /* මෙය ඉවත් කිරීමට display: none; කරන්න */
-        .movie-card { position: relative; border-radius: 10px; overflow: hidden; transition: 0.4s ease; border: 1px solid #1a1a1a; background: #0a0a0a; }
-        .movie-card:hover { transform: translateY(-10px); border-color: var(--netflix-red); box-shadow: 0 10px 30px rgba(229, 9, 20, 0.2); }
-        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .movie-card { border-radius: 6px; overflow: hidden; border: 1px solid #1a1a1a; transition: 0.4s ease; background: #0a0a0a; cursor: pointer; }
+        .movie-card:hover { border-color: var(--netflix-red); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(229, 9, 20, 0.3); }
+        .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; transition: 0.4s; }
 
-        .social-link { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #111; transition: 0.3s; font-size: 20px; border: 1px solid #222; color: #fff; }
-        .social-link:hover { transform: scale(1.1); }
+        .social-link { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #111; transition: 0.3s; font-size: 16px; border: 1px solid #222; color: #fff; }
+        .social-link.fb:hover { color: #1877F2; border-color: #1877F2; transform: scale(1.1); }
+        .social-link.tg:hover { color: #0088cc; border-color: #0088cc; transform: scale(1.1); }
+        .social-link.wa:hover { color: #25D366; border-color: #25D366; transform: scale(1.1); }
 
-        .custom-popup { backdrop-filter: blur(25px); background: rgba(0,0,0,0.9); display: none; }
+        .custom-popup { backdrop-filter: blur(25px); background: rgba(0,0,0,0.9); }
         .sh-text { font-family: 'Noto Sans Sinhala', sans-serif; line-height: 1.6; }
 
-        @media (max-width: 768px) {
-            .hero-section { padding-top: 80px; }
-            .grid-mobile-fix { display: flex; flex-direction: column; align-items: flex-start; }
-            #movie_title { font-size: 4rem !important; }
-            .poster-img { width: 180px !important; }
-        }
-
-        .btn-play { background: #fff; color: #000; font-weight: 900; border-radius: 4px; transition: 0.3s; }
-        .btn-play:hover { background: var(--netflix-red); color: #fff; transform: scale(1.05); }
-        .btn-whatsapp { background: #25D366; border-radius: 4px; transition: 0.3s; color: #fff; }
-        .poster-img { width: 250px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.9); }
+        .footer-main { background: #000; border-top: 1px solid #1a1a1a; padding: 60px 20px 20px 20px; }
+        .footer-bottom { background: #050505; padding: 25px; border-top: 1px solid #111; text-align: center; width: 100%; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
     <nav class="fixed top-0 w-full z-[5000] flex items-center justify-between px-6 md:px-12 py-6 bg-gradient-to-b from-black/90 to-transparent">
         <h1 class="text-2xl font-black tracking-tighter uppercase italic">MOVIE<span class="text-red-600">STREAM</span></h1>
-        <div class="flex gap-4">
-            <a href="#" class="text-green-500 text-2xl"><i class="fa-brands fa-whatsapp"></i></a>
-        </div>
+        <div id="top_user_name" class="text-gray-300 text-xs font-bold uppercase tracking-widest hidden"></div>
     </nav>
 
     <div id="hero" class="hero-section">
         <div class="hero-overlay"></div>
-        <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center grid-mobile-fix">
-            <div class="flex animate__animated animate__fadeInDown">
-                <img id="movie_poster" src="" class="poster-img" alt="Poster">
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-20 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+            
+            <div class="flex justify-center animate__animated animate__fadeInDown">
+                <img id="movie_poster" src="" class="poster-img" alt="Poster" fetchpriority="high">
             </div>
-            <div class="lg:col-span-2 animate__animated animate__fadeInLeft">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase text-white">4K Ultra HD</span>
+
+            <div class="lg:col-span-2 animate__animated animate__fadeInLeft text-center lg:text-left">
+                <div class="flex items-center justify-center lg:justify-start gap-3 mb-4">
+                    <span class="bg-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest text-white">Ultra HD</span>
                     <span class="text-gray-400 font-bold text-xs uppercase" id="movie_duration"></span>
                 </div>
                 <h1 id="movie_title" class="text-6xl md:text-9xl mb-4"></h1>
-                <p id="movie_desc" class="text-gray-300 opacity-80 max-w-2xl mb-10 text-sm md:text-base leading-relaxed"></p>
-                <div class="flex flex-wrap gap-4">
+                <p id="movie_desc" class="text-gray-300 sh-text opacity-80 max-w-2xl mb-10 text-sm md:text-base"></p>
+                
+                <div class="flex flex-wrap justify-center lg:justify-start gap-4">
                     <button onclick="warnOnline()" class="btn-play px-8 md:px-10 py-4 flex items-center gap-3 uppercase text-sm tracking-widest"><i class="fa-solid fa-play"></i> Online Watch</button>
-                    <button onclick="openWhatsAppStep1()" class="btn-whatsapp px-8 md:px-10 py-4 font-black flex items-center gap-3 uppercase text-sm tracking-widest"><i class="fa-brands fa-whatsapp text-2xl"></i> Get on WhatsApp</button>
+                    <button onclick="openWhatsAppStep1()" class="btn-whatsapp text-white px-8 md:px-10 py-4 font-black flex items-center gap-3 uppercase text-sm tracking-widest"><i class="fa-brands fa-whatsapp text-2xl"></i> Get on WhatsApp</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="popup_online_warn" class="fixed inset-0 z-[9999] custom-popup items-center justify-center p-6 text-center">
+    <div id="popup_online_warn" class="fixed inset-0 z-[9999] hidden custom-popup items-center justify-center p-6 text-center">
         <div class="bg-[#0f0f0f] border border-white/10 p-8 rounded-2xl w-full max-w-md animate__animated animate__zoomIn">
             <i class="fa-solid fa-circle-exclamation text-yellow-500 text-5xl mb-4"></i>
             <h3 class="text-white font-black text-xl mb-4 uppercase tracking-tighter">Data Warning!</h3>
@@ -122,11 +142,85 @@
         </div>
     </div>
 
-    <div id="popup_step1" class="fixed inset-0 z-[9999] custom-popup items-center justify-center p-6">
+    <section id="video_display_area">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-black uppercase tracking-widest text-gray-300"><i class="fa-solid fa-cloud text-red-600 mr-2"></i> MOVIESTREAM CLOUD</h2>
+                <button onclick="closeVideo()" class="text-white hover:text-red-600 transition-all"><i class="fa-solid fa-xmark text-4xl"></i></button>
+            </div>
+            <video id="vid-player" class="video-js vjs-netflix-theme" controls preload="auto" playsinline></video>
+        </div>
+    </section>
+
+    <div class="bg-black px-6 md:px-12 py-10 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-[#0a0a0a] p-8 rounded-xl border border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div><p class="text-gray-500 uppercase text-[10px] mb-1 tracking-widest">Language</p><p class="font-bold text-sm uppercase text-gray-200" id="m_lang"></p></div>
+                <div><p class="text-gray-500 uppercase text-[10px] mb-1 tracking-widest">Format</p><p class="font-bold text-sm text-red-600 uppercase">4K HEVC</p></div>
+                <div><p class="text-gray-500 uppercase text-[10px] mb-1 tracking-widest">Subs</p><p class="font-bold text-sm text-gray-200 uppercase">Sinhala / English</p></div>
+                <div><p class="text-gray-500 uppercase text-[10px] mb-1 tracking-widest">Quality</p><p class="font-bold text-sm text-gray-200 uppercase">Premium</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-black px-6 md:px-12 py-12">
+        <div class="max-w-7xl mx-auto text-center md:text-left">
+            <h3 class="text-white font-black uppercase text-lg mb-8 border-l-4 border-red-600 pl-4 tracking-widest inline-block">Screenshots</h3>
+            <div id="screen_list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        </div>
+    </div>
+
+    <section id="more_movies_section" class="bg-black px-6 md:px-12 pb-16">
+        <div class="max-w-7xl mx-auto text-center md:text-left">
+            <h3 class="text-white font-black uppercase text-lg mb-8 border-l-4 border-red-600 pl-4 tracking-widest inline-block">More Like This</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div class="movie-card animate__animated animate__fadeInUp">
+                    <img src="https://via.placeholder.com/300x450/111/fff?text=New+Movie" alt="Movie" loading="eager">
+                    <div class="p-3 text-center"><p class="text-xs font-bold uppercase text-white truncate">New Release</p><p class="text-[9px] text-red-600 font-black">ACTION / 2026</p></div>
+                </div>
+                <div class="movie-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
+                    <img src="https://via.placeholder.com/300x450/111/fff?text=Upcoming" alt="Movie" loading="eager">
+                    <div class="p-3 text-center"><p class="text-xs font-bold uppercase text-white truncate">Upcoming</p><p class="text-[9px] text-red-600 font-black">DRAMA / 2026</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-main pb-0">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
+            <div>
+                <h1 class="text-xl font-black tracking-tighter uppercase mb-4 italic">MOVIE<span class="text-red-600">STREAM</span></h1>
+                <p class="text-gray-500 text-xs leading-relaxed sh-text mb-6">MovieStream යනු ඔබට අවශ්‍ය නවතම සිංහල උපසිරැසි ගැන්වූ චිත්‍රපට සහ ටෙලි කතා මාලා ඉතා උසස් ගුණාත්මක භාවයෙන් යුතුව නැරඹීමට සහ ලබාගැනීමට හැකි හොඳම පද්ධතියයි.</p>
+                <div class="flex gap-3">
+                    <a href="#" class="social-link fb"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-link tg"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#" class="social-link wa"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold uppercase text-xs mb-4 tracking-widest">Legal Info</h4>
+                <ul class="text-gray-500 text-xs space-y-2 uppercase font-bold">
+                    <li class="hover:text-red-600 cursor-pointer transition">DMCA Notice</li>
+                    <li class="hover:text-red-600 cursor-pointer transition">Privacy Policy</li>
+                </ul>
+            </div>
+            <div class="text-center lg:text-right">
+                <p class="text-red-600 font-black text-sm mb-2 uppercase">24/7 Cloud Support</p>
+                <p class="text-gray-500 text-[10px] uppercase tracking-widest">Providing Premium Media Services</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="text-[10px] text-gray-500 tracking-[0.4em] uppercase font-bold">
+                Copyright © 2026 MOVIESTREAM PLATFORM | POWERED BY KAVEESHA THEEKSHANA
+            </p>
+        </div>
+    </footer>
+
+    <div id="popup_step1" class="fixed inset-0 z-[9999] hidden custom-popup items-center justify-center p-6">
         <div class="bg-[#0f0f0f] border border-white/10 p-8 rounded-2xl w-full max-w-md animate__animated animate__fadeInUp">
             <h3 class="text-white font-black text-xl mb-6 uppercase tracking-tighter">Step 1: Your Number</h3>
             <p class="sh-text text-gray-400 mb-4 uppercase font-bold text-[10px]">වට්ස්ඇප් අංකය ඇතුලත් කරන්න (94xxxxxxxxx)</p>
-            <input type="tel" id="user_num" placeholder="947XXXXXXXX" class="w-full bg-black border border-white/10 p-4 rounded text-white text-center text-xl mb-4 outline-none focus:border-green-500 transition-all">
+            <input type="tel" id="user_num" placeholder="947XXXXXXXX" class="w-full bg-black border border-white/10 p-4 rounded text-white text-center text-xl mb-4 outline-none focus:border-red-600 transition-all">
             <div id="num_error" class="hidden text-red-500 text-[10px] mb-4 font-bold uppercase italic text-center">94 අංකයෙන් ආරම්භ කරන්න.</div>
             <div class="flex gap-2">
                 <button onclick="closeAllPopups()" class="w-1/3 bg-gray-800 py-4 rounded font-bold uppercase text-white text-xs">Back</button>
@@ -135,7 +229,7 @@
         </div>
     </div>
 
-    <div id="popup_step2" class="fixed inset-0 z-[9999] custom-popup items-center justify-center p-6">
+    <div id="popup_step2" class="fixed inset-0 z-[9999] hidden custom-popup items-center justify-center p-6">
         <div class="bg-[#0f0f0f] border border-white/10 p-8 rounded-2xl w-full max-w-md animate__animated animate__fadeInRight">
             <h3 class="text-white font-black text-xl mb-6 uppercase tracking-tighter">Step 2: Your Name</h3>
             <p class="sh-text text-gray-400 mb-4 uppercase font-bold text-[10px]">ඔබේ නම ඇතුලත් කරන්න</p>
@@ -147,11 +241,11 @@
         </div>
     </div>
 
-    <div id="popup_step3" class="fixed inset-0 z-[9999] custom-popup items-center justify-center p-6 text-center">
-        <div class="bg-[#0f0f0f] border border-green-600/30 p-8 rounded-2xl w-full max-w-md animate__animated animate__zoomIn">
-            <div class="text-green-500 text-5xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
+    <div id="popup_step3" class="fixed inset-0 z-[9999] hidden custom-popup items-center justify-center p-6 text-center">
+        <div class="bg-[#0f0f0f] border border-red-600/30 p-8 rounded-2xl w-full max-w-md animate__animated animate__zoomIn">
+            <div class="text-red-600 text-5xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
             <h3 class="text-white font-black text-xl mb-2 uppercase" id="final_greet"></h3>
-            <p class="sh-text text-gray-300 text-xs mb-6 leading-relaxed">WhatsApp ආරක්ෂිත පියවරක් ලෙස, අපගේ අංකය ඔබගේ දුරකථනයේ <b>Save</b> කර නොමැති නම් චිත්‍රපටය ලැබීම අවහිර කරනු ලැබේ.</p>
+            <p class="sh-text text-gray-300 text-xs mb-6">WhatsApp ආරක්ෂිත පියවරක් ලෙස, අපගේ අංකය ඔබගේ දුරකථනයේ <b>Save</b> කර නොමැති නම් චිත්‍රපටය ලැබීම අවහිර කරනු ලැබේ.</p>
             <div class="flex flex-col gap-2">
                 <button onclick="finalRequest()" class="w-full btn-whatsapp py-4 rounded font-black uppercase text-white shadow-lg">Confirm & Send</button>
                 <button onclick="openWhatsAppStep2()" class="w-full bg-gray-800 py-2 rounded font-bold uppercase text-white text-xs">Change Name</button>
@@ -159,7 +253,7 @@
         </div>
     </div>
 
-    <div id="popup_congrats" class="fixed inset-0 z-[10000] custom-popup items-center justify-center p-6 text-center">
+    <div id="popup_congrats" class="fixed inset-0 z-[10000] hidden custom-popup items-center justify-center p-6 text-center">
         <div class="bg-[#0a0a0a] border border-white/10 p-10 rounded-3xl w-full max-w-md animate__animated animate__bounceIn">
             <div class="text-6xl mb-4">🎉</div>
             <h3 class="text-white font-black text-2xl mb-2 uppercase tracking-tighter">Request Success!</h3>
@@ -168,93 +262,37 @@
         </div>
     </div>
 
-    <section id="video_display_area" class="bg-black py-10 hidden border-y border-white/5">
-        <div class="max-w-5xl mx-auto px-4">
-            <div class="flex items-center justify-between mb-6">
-                <button onclick="rotateVideo()" class="bg-[#111] border border-[#333] px-4 py-2 rounded text-xs font-bold uppercase"><i class="fa-solid fa-rotate mr-2 text-red-600"></i> Rotate Screen</button>
-                <button onclick="closeVideo()" class="text-white hover:text-red-600 transition-all"><i class="fa-solid fa-xmark text-3xl"></i></button>
-            </div>
-            <div id="video_wrapper" class="transition-all duration-500">
-                <video id="vid-player" class="video-js vjs-netflix-theme" controls preload="auto" playsinline></video>
-            </div>
-        </div>
-    </section>
-
-    <section class="bg-black px-6 md:px-12 py-16">
-        <div class="max-w-7xl mx-auto">
-            <h3 class="text-white font-black uppercase text-lg mb-8 border-l-4 border-red-600 pl-4 tracking-widest inline-block animate__animated animate__fadeInLeft">Movie Screenshots</h3>
-            <div id="screen_list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </div>
-    </section>
-
-    <section id="more_movies_section" class="bg-black px-6 md:px-12 py-16 border-t border-white/5">
-        <div class="max-w-7xl mx-auto">
-            <h3 class="text-white font-black uppercase text-lg mb-8 border-l-4 border-red-600 pl-4 tracking-widest inline-block animate__animated animate__fadeInLeft">More Like This</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                <div class="movie-card animate__animated animate__fadeInUp">
-                    <img src="https://via.placeholder.com/300x450/111/fff?text=Coming+Soon" alt="Movie">
-                    <div class="p-3 text-center">
-                        <p class="text-xs font-bold uppercase truncate">New Release</p>
-                        <p class="text-[9px] text-red-600 font-black">ACTION / 2026</p>
-                    </div>
-                </div>
-                <div class="movie-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-                    <img src="https://via.placeholder.com/300x450/111/fff?text=Upcoming" alt="Movie">
-                    <div class="p-3 text-center">
-                        <p class="text-xs font-bold uppercase truncate">Upcoming Film</p>
-                        <p class="text-[9px] text-red-600 font-black">DRAMA / 2026</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-[#050505] border-t border-white/5 pt-16 pb-10">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left items-center">
-            <div>
-                <h1 class="text-2xl font-black uppercase italic mb-4">MOVIE<span class="text-red-600">STREAM</span></h1>
-                <p class="text-gray-500 text-xs leading-relaxed sh-text">Premium Sinhala Subtitled Media Platform. ඔබේ ප්‍රියතම චිත්‍රපට දැන් අපෙන් ලබාගන්න.</p>
-            </div>
-            <div class="flex flex-col items-center">
-                <p class="text-white font-bold text-xs uppercase tracking-widest mb-6">Connect With Us</p>
-                <div class="flex gap-4">
-                    <a href="#" class="social-link fb text-blue-600"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="social-link tg text-blue-400"><i class="fa-brands fa-telegram"></i></a>
-                    <a href="#" class="social-link wa text-green-500"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
-            <div class="text-center md:text-right">
-                <p class="text-red-600 font-black text-sm mb-2 uppercase">24/7 Support</p>
-                <p class="text-gray-600 text-[10px] uppercase tracking-[0.3em]">Copyright © 2026 | POWERED BY KAVEESHA</p>
-            </div>
-        </div>
-    </footer>
-
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
         let vjsPlayer = null;
-        let isRotated = false;
 
-        window.onload = () => {
+        // DOMContentLoaded භාවිතා කිරීමෙන් අකුරු සහ පින්තූර ඉතා ඉක්මනින් පෙනෙන්න සලස්වයි
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('hero').style.backgroundImage = `url('${MOVIE_DATA.backdrop}')`;
             document.getElementById('movie_poster').src = MOVIE_DATA.poster;
             document.getElementById('movie_title').innerText = MOVIE_DATA.title;
             document.getElementById('movie_desc').innerText = MOVIE_DATA.description;
             document.getElementById('movie_duration').innerText = MOVIE_DATA.duration;
+            document.getElementById('m_lang').innerText = MOVIE_DATA.language;
 
             const screenList = document.getElementById('screen_list');
             MOVIE_DATA.screenshots.forEach((s, index) => {
                 screenList.innerHTML += `
-                <div class="ss-card animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.2}s">
-                    <img src="${s}" alt="Screenshot" loading="lazy">
+                <div class="ss-card animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.15}s">
+                    <img src="${s}" alt="Screenshot" fetchpriority="high" loading="eager">
                 </div>`;
             });
 
             const savedNum = localStorage.getItem('ms_user_num');
             const savedName = localStorage.getItem('ms_user_name');
+            
             if(savedNum) document.getElementById('user_num').value = savedNum;
-            if(savedName) document.getElementById('user_name').value = savedName;
-        };
+            if(savedName) {
+                document.getElementById('user_name').value = savedName;
+                document.getElementById('top_user_name').innerText = `Welcome, ${savedName}`;
+                document.getElementById('top_user_name').classList.remove('hidden');
+            }
+        });
 
         function closeAllPopups() {
             ['popup_online_warn', 'popup_step1', 'popup_step2', 'popup_step3', 'popup_congrats'].forEach(id => {
@@ -268,16 +306,34 @@
             closeAllPopups();
             const area = document.getElementById('video_display_area');
             const msgId = MOVIE_DATA.directLink.split('/').pop();
-            area.classList.remove('hidden');
+            area.style.display = 'block';
             area.scrollIntoView({ behavior: 'smooth' });
 
-            if (!vjsPlayer) { vjsPlayer = videojs('vid-player', { fluid: true }); }
+            if (!vjsPlayer) { 
+                vjsPlayer = videojs('vid-player', { 
+                    fluid: true,
+                    playbackRates: [0.5, 1, 1.25, 1.5, 2],
+                    controlBar: { skipButtons: { forward: 10, backward: 10 } }
+                }); 
+                
+                // Fullscreen වලදී පමණක් Video එක Rotate වීම (Screen Orientation)
+                vjsPlayer.on('fullscreenchange', function() {
+                    if (vjsPlayer.isFullscreen() && window.innerWidth < 768) {
+                        if(screen.orientation && screen.orientation.lock) {
+                            screen.orientation.lock('landscape').catch(e => console.log("Rotate blocked"));
+                        }
+                    } else {
+                        if(screen.orientation && screen.orientation.unlock) {
+                            screen.orientation.unlock();
+                        }
+                    }
+                });
+            }
             vjsPlayer.src({ type: 'video/mp4', src: `${API_BASE_URL}/stream/${msgId}` });
             vjsPlayer.play();
         }
 
         function openWhatsAppStep1() { closeAllPopups(); document.getElementById('popup_step1').style.display = 'flex'; }
-        
         function validateStep1() {
             const num = document.getElementById('user_num').value.trim();
             if(!num.startsWith('94') || num.length < 11) {
@@ -288,16 +344,17 @@
                 openWhatsAppStep2();
             }
         }
-
         function openWhatsAppStep2() { closeAllPopups(); document.getElementById('popup_step2').style.display = 'flex'; }
-        
         function validateStep2() {
             const name = document.getElementById('user_name').value.trim();
             if(name.length < 2) return;
             localStorage.setItem('ms_user_name', name);
+            
+            document.getElementById('top_user_name').innerText = `Welcome, ${name}`;
+            document.getElementById('top_user_name').classList.remove('hidden');
+            
             openWhatsAppStep3();
         }
-
         function openWhatsAppStep3() {
             const name = localStorage.getItem('ms_user_name');
             document.getElementById('final_greet').innerText = `Welcome, ${name}!`;
@@ -309,7 +366,6 @@
             const num = localStorage.getItem('ms_user_num');
             const name = localStorage.getItem('ms_user_name');
             const movie = MOVIE_DATA.title;
-
             try {
                 const res = await fetch(`${API_BASE_URL}/send-movie`, {
                     method: 'POST',
@@ -318,28 +374,13 @@
                 });
                 if(res.ok) {
                     closeAllPopups();
-                    document.getElementById('congrats_msg').innerText = `${name}, ඔබ ඉල්ලූ ${movie} දැන් ඔබේ WhatsApp ගිණුමට ලැබෙනු ඇත.`;
+                    document.getElementById('congrats_msg').innerText = `${name}, ${movie} දැන් ඔබේ WhatsApp වෙත ලැබෙනු ඇත.`;
                     document.getElementById('popup_congrats').style.display = 'flex';
                 }
-            } catch (e) { alert("Server Busy! Please try again later."); }
+            } catch (e) { alert("Server Busy!"); }
         }
 
-        function rotateVideo() {
-            const wrapper = document.getElementById('video_wrapper');
-            if (!isRotated) {
-                wrapper.style.transform = "rotate(90deg)";
-                wrapper.style.width = window.innerWidth > 768 ? "56.25vh" : "100vh";
-                wrapper.style.margin = "100px auto";
-                isRotated = true;
-            } else {
-                wrapper.style.transform = "none";
-                wrapper.style.width = "100%";
-                wrapper.style.margin = "0 auto";
-                isRotated = false;
-            }
-        }
-
-        function closeVideo() { if(vjsPlayer) vjsPlayer.pause(); document.getElementById('video_display_area').classList.add('hidden'); }
+        function closeVideo() { if(vjsPlayer) vjsPlayer.pause(); document.getElementById('video_display_area').style.display = 'none'; }
     </script>
 </body>
 </html>
