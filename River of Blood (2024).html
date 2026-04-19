@@ -60,7 +60,34 @@
         
         body { background-color: #000; color: white; overflow-x: hidden; font-family: 'Roboto', 'Noto Sans Sinhala', sans-serif; scroll-behavior: smooth; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
         
-        .hero-section { position: relative; width: 100%; min-height: 95vh; min-height: 95dvh; background-size: cover; background-position: center; display: flex; align-items: center; }
+        /* 🔴 Mobile Background Fix */
+.hero-section { 
+    position: relative; 
+    width: 100%; 
+    min-height: 95vh; 
+    min-height: 95dvh; 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    display: flex; 
+    align-items: center; 
+}
+
+@media (max-width: 768px) {
+    .hero-section { 
+        background-size: contain; 
+        background-position: top center; 
+    }
+    .hero-overlay { 
+        background: linear-gradient(to top, #000 10%, rgba(0,0,0,0.8) 50%, transparent 100%) !important; 
+    }
+}
+
+.hero-overlay { 
+    background: linear-gradient(to right, #000 15%, rgba(0,0,0,0.3) 60%, transparent 100%), linear-gradient(to top, #000 0%, transparent 40%); 
+    position: absolute; 
+    inset: 0; 
+}
         .hero-overlay { background: linear-gradient(to right, #000 15%, rgba(0,0,0,0.3) 60%, transparent 100%), linear-gradient(to top, #000 0%, transparent 40%); position: absolute; inset: 0; }
 
         #movie_title {
@@ -134,7 +161,9 @@
                     <span class="text-gray-400 font-bold text-xs uppercase" id="movie_duration"></span>
                 </div>
                 <h1 id="movie_title" class="text-6xl md:text-9xl mb-4"></h1>
+<p id="movie_tags" class="text-red-500 font-bold text-xs uppercase tracking-[0.2em] mb-6 opacity-90"></p>
                 <p id="movie_desc" class="text-gray-300 sh-text opacity-80 max-w-2xl mb-10 text-sm md:text-base"></p>
+                
                 
                 <div class="flex flex-wrap justify-center lg:justify-start gap-4">
                     <button onclick="warnOnline()" class="btn-play px-8 md:px-10 py-4 flex items-center gap-3 uppercase text-sm tracking-widest"><i class="fa-solid fa-play"></i> Online Watch</button>
@@ -298,6 +327,7 @@
             document.getElementById('movie_desc').innerText = MOVIE_DATA.description;
             document.getElementById('movie_duration').innerText = MOVIE_DATA.duration;
             document.getElementById('m_lang').innerText = MOVIE_DATA.language;
+            document.getElementById('movie_tags').innerText = MOVIE_DATA.tags;
 
             const screenList = document.getElementById('screen_list');
             MOVIE_DATA.screenshots.forEach((s, index) => {
