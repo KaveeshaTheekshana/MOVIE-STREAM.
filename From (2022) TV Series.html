@@ -39,7 +39,6 @@
             description: "From” කියන්නේ horror, mystery සහ thriller genre එකට අයත් TV series එකක් වන අතර, අමුතු කුඩා නගරයක আটවී සිටින මිනිසුන් කණ්ඩායමක් වටා කතාව ගොඩනැගෙයි. මේ නගරයට ඇතුල් වූවොත් පිටවෙන්න බැරි වීම එහි විශේෂත්වයයි. දවල් කාලයේ ඔවුන් සාමාන්‍ය ජීවිතයක් ගත කළත්, රාත්‍රියේදී භයානක creatures එකක් පිටවී මිනිසුන්ට ආක්‍රමණය කරයි.කතාව ඉදිරියට යද්දී, එහි සිටින මිනිසුන් ඒ නගරයේ රහස් හෙළි කරමින් පැන යාමට මාර්ගයක් සොයන්න උත්සාහ කරයි. ඔවුන් අතර ඇති විශ්වාසය, බිය සහ ගැටුම් කතාව තවත් උද්වේගකාරී කරයි. “From” TV series එක fear, survival සහ mystery ගැන ගැඹුරු කතාවක් වන අතර, suspense සහ horror කැමති අයට විශේෂයෙන්ම ආකර්ෂණීය වේ.",
             backdrop: "https://i.pinimg.com/1200x/39/dc/6c/39dc6c52f8205681aa7fd75d8635f264.jpg", 
             
-            // 🔴 TV Series Logic - මෙතනින් Season සහ Episodes ලේසියෙන්ම දාන්න
             isSeries: true, 
             seasons: [
                 {
@@ -60,19 +59,41 @@
                 {
                     name: "Season 2",
                     episodes: [
-                        { label: "Episode 1", link: "https://t.me/c/3759526849/14" },
-                        { label: "Episode 2", link: "https://t.me/c/3759526849/15" },
-                        { label: "Episode 3", link: "https://t.me/c/3759526849/16" }
+                        { label: "Episode 1", link: "https://t.me/c/3759526849/25" },
+                        { label: "Episode 2", link: "https://t.me/c/3759526849/26" },
+                        { label: "Episode 3", link: "https://t.me/c/3759526849/27" },
+                        { label: "Episode 4", link: "https://t.me/c/3759526849/28" },
+                        { label: "Episode 5", link: "https://t.me/c/3759526849/29" },
+                        { label: "Episode 6", link: "https://t.me/c/3759526849/30" },
+                        { label: "Episode 7", link: "https://t.me/c/3759526849/31" },
+                        { label: "Episode 8", link: "https://t.me/c/3759526849/32" },
+                        { label: "Episode 9", link: "https://t.me/c/3759526849/33" },
+                        { label: "Episode 10", link: "https://t.me/c/3759526849/34" }
                     ]
                 },
                 {
                     name: "Season 3",
                     episodes: [
-                        { label: "Episode 1", link: "https://t.me/c/3759526849/17" }
+                        { label: "Episode 1", link: "https://t.me/c/3759526849/35" },
+                        { label: "Episode 2", link: "https://t.me/c/3759526849/36" },
+                        { label: "Episode 3", link: "https://t.me/c/3759526849/37" },
+                        { label: "Episode 4", link: "https://t.me/c/3759526849/38" },
+                        { label: "Episode 5", link: "https://t.me/c/3759526849/39" },
+                        { label: "Episode 6", link: "https://t.me/c/3759526849/40" },
+                        { label: "Episode 7", link: "https://t.me/c/3759526849/41" },
+                        { label: "Episode 8", link: "https://t.me/c/3759526849/42" },
+                        { label: "Episode 9", link: "https://t.me/c/3759526849/43" },
+                        { label: "Episode 10", link: "https://t.me/c/3759526849/44" }
+                    ]
+                },
+                {
+                    name: "Season 4",
+                    episodes: [
+                        { label: "Episode 1", link: "https://t.me/c/3759526849/45" }
                     ]
                 }
             ],
-            // 🔴 ෆිල්ම් එකක් නම් මේක විතරක් වැඩ කරයි (isSeries: false කරලා තිබ්බොත්)
+            
             directLink: "https://t.me/c/3759526849/11", 
 
             screenshots: [
@@ -94,8 +115,16 @@
         
         body { background-color: #000; color: white; overflow-x: hidden; font-family: 'Roboto', 'Noto Sans Sinhala', sans-serif; scroll-behavior: smooth; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
         
-        .hero-section { position: relative; width: 100%; min-height: 95vh; min-height: 95dvh; background-size: cover; background-position: center; display: flex; align-items: center; }
+        /* 🔴 මෙතන තමයි Mobile Image Zoom එක හැදුවේ */
+        .hero-section { position: relative; width: 100%; min-height: 95vh; min-height: 95dvh; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; }
+        @media (max-width: 768px) {
+            .hero-section { background-size: contain; background-position: top center; }
+        }
+
         .hero-overlay { background: linear-gradient(to right, #000 15%, rgba(0,0,0,0.3) 60%, transparent 100%), linear-gradient(to top, #000 0%, transparent 40%); position: absolute; inset: 0; }
+        @media (max-width: 768px) {
+            .hero-overlay { background: linear-gradient(to top, #000 10%, rgba(0,0,0,0.8) 50%, transparent 100%); }
+        }
 
         #movie_title {
             font-weight: 900; letter-spacing: -3px; line-height: 0.9; text-transform: uppercase;
@@ -142,7 +171,6 @@
         .back-btn { background: rgba(255,255,255,0.1); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.2); color: white; }
         .back-btn:hover { background: var(--netflix-red); border-color: var(--netflix-red); }
 
-        /* 🔴 Season Buttons Style */
         .season-btn { background: #111; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .season-btn:hover { border-color: var(--netflix-red); }
         .season-btn.active { background: var(--netflix-red); border-color: var(--netflix-red); }
@@ -160,7 +188,7 @@
 
     <div id="hero" class="hero-section">
         <div class="hero-overlay"></div>
-        <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-20 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-20 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center mt-12 md:mt-0">
             
             <div class="flex justify-center animate__animated animate__fadeInDown">
                 <img id="movie_poster" src="" class="poster-img" alt="Poster" fetchpriority="high">
