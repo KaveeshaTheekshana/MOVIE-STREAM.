@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MovieStream | Premium 4K Entertainment</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700;900&family=Orbitron:wght@400;900&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root { --n-red: #E50914; --n-blue: #00d2ff; }
+        * { font-style: normal !important; -webkit-tap-highlight-color: transparent; }
+        
+        body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; -webkit-user-select: none; user-select: none; opacity: 0; transition: opacity 1s; }
+        body.loaded { opacity: 1; }
+
+        .nav-blur { background: rgba(0, 26, 51, 0.4); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 5000; }
+
+        .hero-bg { min-height: 100vh; position: relative; display: flex; align-items: center; overflow: hidden; background: transparent; }
+        #hero-3d-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+        
+        .hero-overlay { 
+            background: linear-gradient(to top, #020202 0%, transparent 50%), 
+                        radial-gradient(circle at 20% 50%, rgba(0,210,255,0.1) 0%, rgba(0,0,0,0.5) 100%); 
+            position: absolute; inset: 0; z-index: 5; pointer-events: none; 
+        }
+        
+        .hero-content { position: relative; z-index: 20; pointer-events: none; }
+        .hero-content button, .hero-content a { pointer-events: auto; }
+        
+        .trending-poster-wrapper { position: relative; display: inline-block; perspective: 1000px; }
+        .trending-poster { 
+            width: 200px; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0, 210, 255, 0.3); 
+            border: 1px solid rgba(255,255,255,0.1); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        @media (min-width: 768px) { .trending-poster { width: 320px; } }
+        .trending-poster-wrapper:hover .trending-poster { transform: scale(1.05) rotateY(-5deg) rotateX(5deg); box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 50px rgba(0, 210, 255, 0.5); border-color: rgba(0,210,255,0.5); }
+
+        main { position: relative; z-index: 10; background: #020202; padding-top: 2rem; }
+
+        .movie-card { perspective: 1000px; transition: 0.4s; flex-shrink: 0; cursor: pointer; }
+        .card-inner { width: 140px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1); background: #0a0a0a; position: relative; }
+        @media (min-width: 768px) { .card-inner { width: 180px; } }
+        
+        .movie-card:hover .card-inner { transform: translateY(-10px) rotateX(5deg) scale(1.05); border-color: var(--n-red); box-shadow: 0 15px 35px rgba(229, 9, 20, 0.4); }
+
+        .badge-4k { background: var(--n-red); font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; box-shadow: 0 0 10px var(--n-red); color: white; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .btn-modern { 
+            position: relative; overflow: hidden; transition: 0.4s; backdrop-filter: blur(10px); font-weight: 900; 
+            cursor: pointer; border: 1px solid rgba(0,210,255,0.5); background: linear-gradient(45deg, rgba(0,210,255,0.1), rgba(0,210,255,0.2)); 
+            box-shadow: 0 0 15px rgba(0,210,255,0.2); letter-spacing: 0.2em;
+        }
+        .btn-modern::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg); animation: shineBtn 3s infinite;
+        }
+        @keyframes shineBtn { 100% { left: 200%; } }
+        .btn-modern:hover { background: var(--n-blue); color: black; box-shadow: 0 0 30px var(--n-blue), inset 0 0 10px rgba(255,255,255,0.5); transform: translateY(-3px); border-color: transparent; }
+
+        #search_spotlight { background: rgba(0, 10, 20, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); }
+        .spotlight-card { transition: 0.3s; animation: softFloat 4s ease-in-out infinite; }
+        @keyframes softFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
+        .floating { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        .footer-glow {
+            position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--n-blue), transparent); box-shadow: 0 0 20px var(--n-blue);
+        }
+
+        /* View All Grid Mode Styles */
+        .grid-view-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        @media (min-width: 768px) { .grid-view-container { grid-template-columns: repeat(4, 1fr); gap: 2rem; } }
+        @media (min-width: 1024px) { .grid-view-container { grid-template-columns: repeat(5, 1fr); gap: 2rem; } }
+        .grid-view-container .movie-card { width: 100%; }
+        .grid-view-container .card-inner { width: 100%; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <nav class="fixed top-0 w-full z-[1000] nav-blur px-4 md:px-16 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="text-xl md:text-2xl font-black uppercase font-[Orbitron] tracking-tighter text-white drop-shadow-[0_0_10px_#00d2ff]">MOVIE<span class="text-[#00d2ff]">STREAM</span></a>
+            <div id="top_user_name" class="hidden text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] pl-4 border-l border-white/10"></div>
+        </div>
+        
+        <div class="hidden md:flex gap-8 text-[10px] font-black tracking-widest uppercase">
+            <a href="?view_cat=Action" class="hover:text-[#00d2ff] transition">Action</a>
+            <a href="?view_cat=Lovely" class="hover:text-[#00d2ff] transition">Lovely</a>
+            <a href="?view_cat=Horror" class="hover:text-[#00d2ff] transition">Horror</a>
+            <a href="?view_cat=TV Series" class="hover:text-[#00d2ff] transition">TV Series</a>
+        </div>
+
+        <div class="relative group flex items-center w-[55%] md:w-auto">
+            <i class="fa fa-search absolute left-3 text-[#00d2ff] text-xs pointer-events-none z-10"></i>
+            <input type="text" id="main_search" oninput="liveSearch(this.value)" placeholder="Search Movies..." class="w-full bg-white/10 border border-white/20 rounded-full pl-9 pr-9 py-2 text-[10px] md:text-xs outline-none focus:border-[#00d2ff] transition-all text-white relative z-10">
+            <i class="fa fa-times absolute right-3 text-gray-400 text-xs cursor-pointer hover:text-red-500 hidden z-20" id="clear_search" onclick="clearSearch()"></i>
+        </div>
+    </nav>
+
+    <div id="search_spotlight" class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center opacity-0 transition-opacity duration-300" onclick="closeSpotlight(event)">
+        <div class="absolute top-10 right-10 text-white text-3xl cursor-pointer hover:text-red-500" onclick="clearSearch()"><i class="fa fa-times"></i></div>
+        <div id="spotlight_content" class="flex gap-8 md:gap-12 flex-wrap justify-center max-w-6xl px-4"></div>
+    </div>
+
+    <canvas id="hero-3d-canvas"></canvas>
+
+    <header id="hero" class="hero-bg pt-20 md:pt-0">
+        <div class="hero-overlay"></div>
+        <div class="hero-content px-4 md:px-16 w-full max-w-7xl flex flex-col md:flex-row items-center justify-between gap-12 lg:gap-20">
+            
+            <div class="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1 w-full md:w-[55%] mt-10 md:mt-0">
+                <div class="flex items-center gap-3 mb-6 animate__animated animate__fadeInLeft" id="hero_badge_area">
+                    <span class="bg-white/10 border border-[#00d2ff]/30 px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-widest text-[#00d2ff] backdrop-blur-md flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#00d2ff] animate-pulse"></span> Trending Now
+                    </span>
+                    <div class="h-[1px] w-12 md:w-24 bg-gradient-to-r from-[#00d2ff] to-transparent"></div>
+                </div>
+                
+                <h1 id="hero_title" class="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-6 font-[Orbitron] text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                    Loading...
+                </h1>
+                
+                <p id="hero_desc" class="text-gray-300 text-xs md:text-sm max-w-xl mb-10 leading-loose border-l-2 border-[#00d2ff]/50 pl-4 font-[Noto Sans Sinhala] bg-gradient-to-r from-black/40 to-transparent py-2 rounded-r-lg">
+                </p>
+                
+                <div class="flex items-center gap-4" id="hero_btn_area">
+                    <button id="hero_btn" class="btn-modern text-white px-8 md:px-12 py-4 md:py-5 rounded-full font-black uppercase text-[10px] md:text-xs shadow-[0_10px_20px_rgba(0,0,0,0.5)] flex items-center gap-3">
+                        <i class="fa-solid fa-play"></i> Watch Now
+                    </button>
+                    <div class="flex gap-2 text-yellow-500 text-xs md:text-sm ml-2">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center order-1 md:order-2 w-full md:w-[45%] pt-[80px] lg:pt-0 animate__animated animate__zoomIn" id="hero_poster_area">
+                <div class="trending-poster-wrapper floating">
+                    <div class="absolute -inset-4 bg-[#00d2ff] opacity-20 blur-2xl rounded-full animate-pulse z-0"></div>
+                    <img id="hero_poster" src="" class="trending-poster object-cover relative z-10" alt="Trending">
+                    <div class="absolute top-4 right-4 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-lg z-20 uppercase tracking-widest border border-red-400">4K Ultra</div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="relative z-30 px-4 md:px-16 pb-32 min-h-screen">
+        <div id="local_search_area" class="hidden mb-10 max-w-xl mx-auto pt-10">
+            <div class="relative w-full bg-white/5 border border-[#00d2ff]/30 rounded-full overflow-hidden backdrop-blur-md focus-within:border-[#00d2ff] transition-colors">
+                <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#00d2ff]"></i>
+                <input type="text" id="local_filter" oninput="filterViewAll(this.value)" placeholder="Find movies in this category..." class="w-full bg-transparent border-none py-3 pl-12 pr-4 text-xs text-white outline-none">
+            </div>
+            <p id="local_result_count" class="text-center text-gray-500 text-[10px] uppercase font-bold mt-2 tracking-widest"></p>
+        </div>
+
+        <div id="dynamic_sections" class="space-y-16"></div>
+    </main>
+
+    <footer class="bg-[#050505] pt-20 pb-12 px-6 border-t border-white/5 relative z-30 overflow-hidden">
+        <div class="footer-glow"></div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-center text-center md:text-left mb-10">
+            <div>
+                <h2 class="text-3xl font-black font-[Orbitron] mb-2 text-white tracking-tighter">MOVIE<span class="text-[#00d2ff]">STREAM</span></h2>
+                <p class="text-gray-500 text-[10px] tracking-[0.3em] uppercase leading-relaxed">Sri Lanka's Premium Cloud Entertainment Network.</p>
+            </div>
+            
+            <div class="flex justify-center gap-6">
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-[#00d2ff] hover:shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all duration-300"><i class="fa-brands fa-facebook-f text-lg"></i></a>
+                <a href="https://wa.me/94701234567" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-[#25D366] hover:shadow-[0_0_15px_rgba(37,211,102,0.4)] transition-all duration-300"><i class="fa-brands fa-whatsapp text-2xl"></i></a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-[#00d2ff] hover:shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all duration-300"><i class="fa-brands fa-telegram text-xl"></i></a>
+            </div>
+
+            <div class="md:text-right">
+                <p class="text-gray-600 text-[9px] font-black uppercase mb-1 tracking-[0.2em]">Engineered By</p>
+                <p class="text-white font-black text-xs uppercase tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">Kaveesha Theekshana</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-white/5 pt-6 text-center">
+            <p class="text-gray-600 text-[9px] uppercase font-bold tracking-[0.4em]">© 2026 MovieStream Core. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const DB_URL = "https://panel.moviestream.lat/api/movies";
+        let MASTER_DATA = [];
+        let VIEW_ALL_DATA = [];
+
+        window.onload = async () => {
+            try {
+                const savedName = localStorage.getItem('ms_user_name');
+                if (savedName) {
+                    const topUserName = document.getElementById('top_user_name');
+                    if(topUserName) {
+                        topUserName.innerText = `Hey, ${savedName}!`;
+                        topUserName.classList.remove('hidden');
+                    }
+                }
+
+                const res = await fetch(`${DB_URL}?v=${new Date().getTime()}`);
+                MASTER_DATA = await res.json();
+                
+                // ======== NEW LOGIC: Check URL for Category View Mode ========
+                const urlParams = new URLSearchParams(window.location.search);
+                const viewCat = urlParams.get('view_cat');
+
+                if (viewCat) {
+                    renderViewAllMode(viewCat);
+                } else {
+                    // Normal Index Mode
+                    const trending = MASTER_DATA.filter(m => m.isTrending === true || m.isTrending === "true");
+                    const heroMovie = trending.length > 0 ? trending[0] : MASTER_DATA[0];
+                    if(heroMovie) updateHero(heroMovie);
+                    renderContent(MASTER_DATA);
+                }
+                
+                document.body.classList.add('loaded');
+            } catch (e) { document.getElementById('hero_title').innerText = "OFFLINE"; }
+        };
+
+        function updateHero(m) {
+            document.getElementById('hero_title').innerText = m.title;
+            document.getElementById('hero_poster').src = m.imageUrl;
+            document.getElementById('hero_desc').innerText = m.description || "Immerse yourself in this stunning 4K masterpiece. Experience unparalleled visual quality and seamless cloud streaming exclusively on MovieStream Ultra.";
+            document.getElementById('hero_btn').onclick = () => { location.href = "movie-details.html?id=" + m._id; };
+        }
+
+        // Standard Feed Mode
+        function renderContent(data) {
+            const container = document.getElementById('dynamic_sections');
+            container.innerHTML = '';
+            const cats = [{ id: "Action", name: "Action" }, { id: "Lovely", name: "Romance" }, { id: "Horror", name: "Horror" }, { id: "TV Series", name: "TV Series" }];
+            cats.forEach(cat => {
+                const filtered = data.filter(m => m.category === cat.id && (m.showMain === true || m.showMain === "true"));
+                if(filtered.length === 0) return;
+                
+                const uniqueTitles = new Set();
+                const uniqueFiltered = [];
+                filtered.forEach(m => {
+                    const t = m.title.toLowerCase().trim();
+                    if (!uniqueTitles.has(t)) {
+                        uniqueTitles.add(t);
+                        uniqueFiltered.push(m);
+                    }
+                });
+
+                // UPDATE: "See All" Link modified to use ?view_cat query parameter
+                let html = `<div id="${cat.id}"><div class="flex justify-between items-center mb-6 border-l-4 border-[#00d2ff] pl-3"><h2 class="text-base md:text-xl font-black uppercase text-white">${cat.name}</h2><a href="?view_cat=${encodeURIComponent(cat.id)}" class="text-[10px] font-black uppercase text-[#00d2ff]">See All <i class="fa fa-chevron-right ml-1"></i></a></div><div class="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-6">`;
+                uniqueFiltered.slice(0, 10).forEach(m => {
+                    html += `<div class="movie-card" onclick="location.href='movie-details.html?id=${m._id}'"><div class="card-inner"><img src="${m.imageUrl}" class="w-full aspect-[2/3] object-cover" loading="lazy"><div class="absolute top-2 right-2 badge-4k">4K</div></div><p class="mt-3 text-[10px] font-bold text-gray-400 truncate uppercase">${m.title}</p></div>`;
+                });
+                container.innerHTML += html + '</div></div>';
+            });
+        }
+
+        // ======== NEW LOGIC: View All Grid Mode ========
+        function renderViewAllMode(catId) {
+            // Update Hero Section to act as Title
+            document.getElementById('hero').style.minHeight = '50vh';
+            document.getElementById('hero').style.paddingTop = '100px';
+            document.getElementById('hero_badge_area').style.display = 'none';
+            document.getElementById('hero_btn_area').style.display = 'none';
+            document.getElementById('hero_poster_area').style.display = 'none';
+            document.getElementById('hero_desc').style.display = 'none';
+            
+            const titleElement = document.getElementById('hero_title');
+            titleElement.innerText = catId === 'Lovely' ? 'ROMANCE' : catId.toUpperCase();
+            titleElement.style.textAlign = 'center';
+            titleElement.parentElement.style.width = '100%';
+            titleElement.parentElement.style.alignItems = 'center';
+
+            // Show Local Filter Search
+            document.getElementById('local_search_area').style.display = 'block';
+
+            // Filter Data (No Duplicates)
+            const uniqueTitles = new Set();
+            VIEW_ALL_DATA = [];
+            MASTER_DATA.forEach(m => {
+                if(m.category === catId) {
+                    const t = m.title.toLowerCase().trim();
+                    if (!uniqueTitles.has(t)) {
+                        uniqueTitles.add(t);
+                        VIEW_ALL_DATA.push(m);
+                    }
+                }
+            });
+
+            renderGridList(VIEW_ALL_DATA, catId);
+        }
+
+        function renderGridList(data, catId) {
+            const container = document.getElementById('dynamic_sections');
+            const countText = document.getElementById('local_result_count');
+            
+            if(data.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 opacity-50"><i class="fa-solid fa-ghost text-6xl text-[#00d2ff] mb-4"></i><h2 class="text-2xl font-black uppercase text-white tracking-widest">No Content Found</h2></div>`;
+                countText.innerText = "0 Items Found";
+                return;
+            }
+
+            countText.innerText = `Showing ${data.length} Masterpieces in ${catId === 'Lovely' ? 'Romance' : catId}`;
+
+            let html = `<div class="grid-view-container">`;
+            data.forEach(m => {
+                html += `
+                    <div class="movie-card" onclick="location.href='movie-details.html?id=${m._id}'">
+                        <div class="card-inner">
+                            <img src="${m.imageUrl}" class="w-full aspect-[2/3] object-cover" loading="lazy">
+                            <div class="absolute top-3 right-3 badge-4k">4K</div>
+                        </div>
+                        <h3 class="mt-4 text-[11px] font-black text-white truncate uppercase tracking-wider">${m.title}</h3>
+                        <p class="text-[9px] text-[#00d2ff] uppercase font-bold mt-1 tracking-widest">${m.year || '2026'}</p>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function filterViewAll(q) {
+            if(q.trim() === '') {
+                renderGridList(VIEW_ALL_DATA, new URLSearchParams(window.location.search).get('view_cat'));
+                return;
+            }
+            const filtered = VIEW_ALL_DATA.filter(m => m.title.toLowerCase().includes(q.toLowerCase()));
+            renderGridList(filtered, new URLSearchParams(window.location.search).get('view_cat'));
+        }
+        // ===============================================
+
+        function liveSearch(q) {
+            const spotlight = document.getElementById('search_spotlight');
+            const content = document.getElementById('spotlight_content');
+            document.getElementById('clear_search').style.display = q.length > 0 ? 'block' : 'none';
+            if(q.length < 2) { closeSpotlight(null, true); return; }
+            
+            const uniqueTitles = new Set();
+            const filtered = [];
+            MASTER_DATA.forEach(m => {
+                if (m.title.toLowerCase().includes(q.toLowerCase())) {
+                    const t = m.title.toLowerCase().trim();
+                    if (!uniqueTitles.has(t)) {
+                        uniqueTitles.add(t);
+                        filtered.push(m);
+                    }
+                }
+            });
+
+            if(filtered.length > 0) {
+                spotlight.classList.remove('hidden'); spotlight.classList.add('flex');
+                setTimeout(() => spotlight.classList.add('opacity-100'), 10);
+                content.innerHTML = filtered.slice(0, 4).map(m => `<div class="spotlight-card cursor-pointer flex flex-col items-center" onclick="location.href='movie-details.html?id=${m._id}'"><div class="w-[160px] md:w-[240px] rounded-2xl overflow-hidden border-2 border-[#00d2ff]/40 shadow-2xl bg-black"><img src="${m.imageUrl}" class="w-full aspect-[2/3] object-cover"></div><h3 class="text-white font-black text-[11px] mt-3 uppercase text-center">${m.title}</h3></div>`).join('');
+            }
+        }
+        
+        function closeSpotlight(e, force = false) {
+            const spot = document.getElementById('search_spotlight');
+            if (force || (e && e.target.id === 'search_spotlight')) { spot.classList.remove('opacity-100'); setTimeout(() => { spot.classList.remove('flex'); spot.classList.add('hidden'); }, 300); }
+        }
+        function clearSearch() { document.getElementById('main_search').value = ''; closeSpotlight(null, true); }
+    </script>
+
+    <script>
+        const canvas = document.getElementById('hero-3d-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x001a33);
+        scene.fog = new THREE.FogExp2(0x001a33, 0.0012);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
+        camera.position.z = 600;
+
+        const particleCount = 4000;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePos = [];
+        const particleVel = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            particlePos.push((Math.random() - 0.5) * 3000, (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 3000);
+            particleVel.push(Math.random() * 0.8 + 0.2);
+        }
+
+        particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(particlePos, 3));
+        const particleMat = new THREE.PointsMaterial({ color: 0x00d2ff, size: 3, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
+        scene.add(new THREE.Points(particleGeo, particleMat));
+
+        const glassMaterial = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.9, opacity: 1, transparent: true, roughness: 0.1, emissive: 0x0055ff, emissiveIntensity: 0.3 });
+        const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xff00aa, wireframe: true, transparent: true, opacity: 0.5 });
+        const jellyfishList = [];
+
+        for(let i=0; i<5; i++) {
+            const jf = new THREE.Group();
+            jf.add(new THREE.Mesh(new THREE.IcosahedronGeometry(20, 1), coreMaterial));
+            jf.add(new THREE.Mesh(new THREE.SphereGeometry(35, 16, 16), glassMaterial));
+            jf.position.set((Math.random() - 0.5) * 1500, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 800 - 200);
+            jf.userData = { speed: Math.random() * 0.5 + 0.5, offset: Math.random() * 10 };
+            scene.add(jf);
+            jellyfishList.push(jf);
+        }
+
+        scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+        const pinkLight = new THREE.PointLight(0xff00aa, 4, 2000);
+        pinkLight.position.set(500, 200, 100);
+        scene.add(pinkLight);
+        const cyanLight = new THREE.PointLight(0x00ffff, 4, 2000);
+        cyanLight.position.set(-500, -200, -200);
+        scene.add(cyanLight);
+
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - window.innerWidth / 2);
+            mouseY = (event.clientY - window.innerHeight / 2);
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+
+            camera.position.x += (mouseX * 0.15 - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY * 0.15 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            const posAttr = particleGeo.attributes.position;
+            for (let i = 0; i < particleCount; i++) {
+                let y = posAttr.getY(i) + particleVel[i];
+                if (y > 1000) y = -1000;
+                posAttr.setY(i, y);
+            }
+            posAttr.needsUpdate = true;
+
+            jellyfishList.forEach(jf => {
+                jf.position.y += Math.sin(time * jf.userData.speed + jf.userData.offset) * 2;
+                jf.rotation.y += 0.01;
+            });
+
+            pinkLight.intensity = 3 + Math.sin(time * 2) * 1.5;
+            cyanLight.intensity = 3 + Math.cos(time * 1.5) * 1.5;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

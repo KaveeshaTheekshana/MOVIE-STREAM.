@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page_title">MovieStream Ultra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+    <style>
+        :root { --neon-red: #E50914; --neon-blue: #00d2ff; }
+        * { font-style: normal !important; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #020202; color: white; font-family: 'Inter', sans-serif; opacity: 0; transition: opacity 1s; }
+        body.loaded { opacity: 1; }
+        .hero-section { 
+            position: relative; min-height: 100vh; display: flex; align-items: center; 
+            background-size: cover; background-position: center; transition: background 0.5s;
+        }
+        .hero-overlay { background: radial-gradient(circle at 20% 50%, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.95) 100%), linear-gradient(to top, #020202 5%, transparent 40%); position: absolute; inset: 0; }
+        .poster-img { width: 280px; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .btn-modern { position: relative; overflow: hidden; transition: 0.4s; backdrop-filter: blur(10px); font-weight: 900; cursor: pointer; }
+        .btn-modern:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        #video_display_area { display: none; background: #000; padding: 20px 0; }
+        
+        .player-wrapper { width: 100%; max-width: 1000px; aspect-ratio: 16/9; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 0 50px rgba(229,9,20,0.3); background: #000; }
+        .video-js .vjs-control-bar { background-color: rgba(0,0,0,0.85); }
+        .video-js .vjs-play-progress, .video-js .vjs-slider-bar, .video-js .vjs-volume-level { background-color: var(--neon-red); }
+        .video-js .vjs-big-play-button { background-color: rgba(229,9,20,0.8); border: none; border-radius: 50%; width: 80px; height: 80px; line-height: 80px; margin-top: -40px; margin-left: -40px; }
+        .video-js:hover .vjs-big-play-button { background-color: var(--neon-red); }
+        
+        .custom-popup { backdrop-filter: blur(25px); background: rgba(0,0,0,0.9); display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+        .popup-box { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; width: 100%; max-width: 400px; padding: 40px; text-align: center; }
+        .success-3d { transform-style: preserve-3d; animation: pop3D 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop3D { 0% { transform: scale(0.5) rotateY(30deg); opacity: 0; } 100% { transform: scale(1) rotateY(0); opacity: 1; } }
+        .floating { animation: float 5s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .ss-card img { width: 100%; border-radius: 12px; border: 1px solid #222; aspect-ratio: 16/9; object-fit: cover; }
+        .footer-blur { background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <nav class="fixed top-0 w-full z-[100] px-6 py-6 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent">
+        <div class="flex items-center gap-4">
+            <button onclick="window.history.back()" class="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-full hover:bg-red-600 transition-all"><i class="fa-solid fa-arrow-left"></i></button>
+            <h1 class="text-2xl font-black uppercase font-[Orbitron]">MOVIE<span class="text-red-600">STREAM</span></h1>
+        </div>
+        
+        <div class="hidden md:flex gap-8 text-[10px] font-black tracking-widest uppercase relative z-50">
+            <a href="index.html?view_cat=Action" class="hover:text-red-500 transition text-white">Action</a>
+            <a href="index.html?view_cat=Lovely" class="hover:text-red-500 transition text-white">Lovely</a>
+            <a href="index.html?view_cat=Horror" class="hover:text-red-500 transition text-white">Horror</a>
+            <a href="index.html?view_cat=TV%20Series" class="hover:text-red-500 transition text-white">TV Series</a>
+        </div>
+
+        <div id="top_user_name" class="hidden text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] pl-4 border-l border-white/10"></div>
+    </nav>
+
+    <div id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-4 flex justify-center pt-20 lg:pt-0"><img id="movie_poster" src="" class="poster-img floating" alt="Poster"></div>
+            <div class="lg:col-span-8 text-center lg:text-left">
+                <div class="flex items-center justify-center lg:justify-start gap-4 mb-6">
+                    <span class="bg-red-600 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Ultra 4K</span>
+                    <span class="text-blue-400 font-bold text-xs" id="movie_year"></span>
+                </div>
+                <h1 id="movie_title" class="text-5xl md:text-8xl font-black mb-6 uppercase leading-[0.9]"></h1>
+                <div id="tv_info" class="hidden mb-6 text-blue-500 font-black tracking-widest uppercase text-sm"></div>
+                <p id="movie_desc" class="text-gray-300 max-w-2xl mb-10 text-sm leading-relaxed opacity-90"></p>
+                <div id="download_anchor" class="flex flex-wrap justify-center lg:justify-start gap-4">
+                    <button onclick="warnOnline()" class="btn-modern bg-white text-black px-10 py-4 rounded-xl text-xs uppercase font-black tracking-widest">Play Online</button>
+                    <button onclick="openWhatsAppStep1()" class="btn-modern bg-[#25D366] text-white px-10 py-4 rounded-xl text-xs uppercase font-black tracking-widest"><i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Get via WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="search_spotlight" class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center bg-black/90 backdrop-blur-md opacity-0 transition-opacity duration-300" onclick="closeSpotlight(event)">
+        <div class="absolute top-10 right-10 text-white text-3xl cursor-pointer hover:text-red-500" onclick="clearSearch()"><i class="fa fa-times"></i></div>
+        <div id="spotlight_content" class="flex gap-8 md:gap-12 flex-wrap justify-center max-w-6xl px-4"></div>
+    </div>
+
+    <section id="video_display_area">
+        <div class="max-w-5xl mx-auto px-4 text-right">
+            <button onclick="closeVideo()" class="text-white text-4xl mb-4 hover:text-red-600 transition"><i class="fa-solid fa-xmark"></i></button>
+            <div class="player-wrapper">
+                <video id="player" class="video-js vjs-big-play-centered" controls preload="auto" playsinline></video>
+            </div>
+        </div>
+    </section>
+
+    <section class="relative z-10 px-6 pb-20 pt-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/5 text-center"><p class="text-gray-500 text-[10px] font-black uppercase mb-2">Category</p><p id="m_cat" class="text-red-500 font-bold text-sm uppercase"></p></div>
+            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/5 text-center"><p class="text-gray-500 text-[10px] font-black uppercase mb-2">Quality</p><p id="m_qual" class="text-green-500 font-bold text-sm uppercase"></p></div>
+            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/5 text-center"><p class="text-gray-500 text-[10px] font-black uppercase mb-2">Rating</p><p id="m_rate" class="text-yellow-500 font-bold text-sm uppercase"></p></div>
+            <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/5 text-center"><p class="text-gray-500 text-[10px] font-black uppercase mb-2">Size</p><p id="movie_size_bottom" class="text-blue-400 font-bold text-sm uppercase"></p></div>
+        </div>
+    </section>
+
+    <section id="episodes_section" class="bg-[#0a0a0a] py-16 px-6 hidden border-t border-b border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-l-4 border-blue-600 pl-4">
+                <h3 class="text-white font-black uppercase text-sm tracking-widest">Select Season & Episode</h3>
+                
+                <div class="flex gap-4 w-full md:w-auto">
+                    <div class="flex-1 md:w-40">
+                        <label class="text-[9px] text-gray-500 font-bold uppercase mb-1 block">Season</label>
+                        <select id="season_selector" onchange="renderEpisodes(this.value)" class="w-full bg-[#111] text-white text-xs font-bold px-4 py-3 rounded-lg outline-none border border-white/20 focus:border-[#00d2ff] transition cursor-pointer">
+                        </select>
+                    </div>
+                    <div class="flex-1 md:w-40">
+                        <label class="text-[9px] text-gray-500 font-bold uppercase mb-1 block">Episode</label>
+                        <select id="episode_selector" onchange="changeEpisode(this.value)" class="w-full bg-[#111] text-white text-xs font-bold px-4 py-3 rounded-lg outline-none border border-white/20 focus:border-[#00d2ff] transition cursor-pointer">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="screenshots_section" class="bg-black py-20 px-6 hidden">
+        <div class="max-w-7xl mx-auto">
+            <h3 class="text-white font-black uppercase text-sm mb-12 border-l-4 border-red-600 pl-4 tracking-widest">Visual Preview</h3>
+            <div id="screen_list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
+    <footer class="footer-blur pt-20 pb-10 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 items-center text-center md:text-left">
+            <div>
+                <h1 class="text-2xl font-black uppercase font-[Orbitron]">MOVIE<span class="text-red-600">STREAM</span></h1>
+                <p class="text-gray-500 text-[10px] uppercase mt-4 tracking-widest">Sri Lanka's Premium Cloud Entertainment System.</p>
+            </div>
+            <div class="flex justify-center gap-6">
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:border-red-600 transition-all text-xl"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:border-green-500 transition-all text-xl"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:border-blue-400 transition-all text-xl"><i class="fa-brands fa-telegram"></i></a>
+            </div>
+            <div class="md:text-right text-[10px] font-black text-gray-500 uppercase tracking-widest leading-loose">
+                Developed By Kaveesha Theekshana<br>© 2026 MovieStream Platform
+            </div>
+        </div>
+    </footer>
+
+    <div id="popup_warning" class="custom-popup">
+        <div class="popup-box success-3d border-red-600/50">
+            <i class="fa-solid fa-triangle-exclamation text-red-600 text-5xl mb-6"></i>
+            <h3 class="text-white font-black text-xl mb-4 uppercase">Error!</h3>
+            <p id="warning_msg" class="text-gray-300 mb-8 text-sm leading-relaxed"></p>
+            <button onclick="closeWarning()" class="w-full bg-red-600 text-white py-4 rounded-xl font-black uppercase text-xs">තේරුණා</button>
+        </div>
+    </div>
+
+    <div id="popup_online_warn" class="custom-popup">
+        <div class="popup-box animate__animated animate__zoomIn border-white/10">
+            <i class="fa-solid fa-circle-exclamation text-yellow-500 text-5xl mb-6"></i>
+            <h3 class="text-white font-black text-xl mb-4 uppercase">Data Warning!</h3>
+            <p class="text-gray-300 mb-8 text-sm">මෙය නැරඹීමට විශාල Data ප්‍රමාණයක් වැය වේ. ඔබ සතුව WhatsApp Package පමනක් තිබේ නම් කරුණාකර WhatsApp හරහා ලබා ගන්න.</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="playNowDirectly()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-xs">ඔව්, දිගටම යන්න</button>
+                <button onclick="openWhatsAppStep1()" class="w-full bg-[#25D366] text-white py-4 rounded-xl font-black uppercase text-xs">WhatsApp එකට ගන්න</button>
+                <button onclick="closeAllPopups()" class="text-gray-500 text-[10px] font-bold uppercase mt-2">අවලංගු කරන්න</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup_step1" class="custom-popup">
+        <div class="popup-box border-white/10 animate__animated animate__fadeInUp">
+            <h3 class="text-white font-black text-xl mb-6 uppercase text-center">Step 1: Number</h3>
+            <input type="tel" id="user_num" placeholder="947XXXXXXXX" class="w-full bg-black border border-white/10 p-4 rounded-xl text-white text-center text-xl mb-4 outline-none focus:border-green-500">
+            <div class="flex gap-2">
+                <button onclick="closeAllPopups()" class="w-1/3 bg-gray-800 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Back</button>
+                <button onclick="validateStep1()" class="w-2/3 bg-[#25D366] py-4 rounded-xl font-black uppercase text-white text-xs">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup_step2" class="custom-popup">
+        <div class="popup-box border-white/10 animate__animated animate__fadeInRight">
+            <h3 class="text-white font-black text-xl mb-6 uppercase text-center">Step 2: Name</h3>
+            <input type="text" id="user_name" placeholder="English වලින් පමණි" class="w-full bg-black border border-white/10 p-4 rounded-xl text-white text-center text-xl mb-6 outline-none focus:border-green-500">
+            <div class="flex gap-2">
+                <button onclick="openWhatsAppStep1()" class="w-1/3 bg-gray-800 text-white py-4 rounded-xl font-bold uppercase text-[10px]">Back</button>
+                <button onclick="validateStep2()" class="w-2/3 bg-[#25D366] py-4 rounded-xl font-black uppercase text-white text-xs">Finish</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup_step3" class="custom-popup">
+        <div class="popup-box border-green-500/30 animate__animated animate__zoomIn">
+            <div class="text-green-500 text-6xl mb-4"><i class="fa-brands fa-whatsapp"></i></div>
+            <h3 class="text-white font-black text-xl mb-2 uppercase" id="final_greet"></h3>
+            <p class="text-gray-300 text-xs mb-6">ඔබේ ඉල්ලීම අපගේ Cloud Bot වෙත යොමු කිරීමට සූදානම්. කරුණාකර තහවුරු කරන්න.</p>
+            <div class="flex flex-col gap-2">
+                <button onclick="sendToVPSBot()" class="w-full bg-[#25D366] py-4 rounded-xl font-black uppercase text-white shadow-[0_0_15px_rgba(37,211,102,0.4)]">Confirm & Send to Bot</button>
+                <button onclick="openWhatsAppStep2()" class="w-full bg-gray-800 py-2 rounded-xl font-bold uppercase text-white text-[10px]">Edit Name</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="popup_congrats" class="custom-popup text-center">
+        <div class="popup-box border-green-500/50 success-3d">
+            <div class="text-green-500 text-6xl mb-4"><i class="fa-solid fa-circle-check"></i></div>
+            <h3 class="text-white font-black text-2xl mb-2 uppercase">සාර්ථකයි!</h3>
+            <p id="congrats_msg" class="text-gray-300 text-sm mb-6 leading-relaxed font-bold"></p>
+            <button onclick="resetToButtons()" class="w-full bg-white text-black py-4 rounded-xl font-black uppercase text-xs">මුලට යන්න</button>
+        </div>
+    </div>
+
+    <script>
+        const DB_API_URL = "https://panel.moviestream.lat/api/movies";
+        const API_BASE_URL = "https://api.moviestream.lat";
+        let MOVIE_DATA = {};
+        window.allMoviesData = []; 
+        let player = null;
+
+        window.onload = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('id');
+            if(!movieId) return window.location.href = 'index.html';
+
+            const savedNum = localStorage.getItem('ms_user_num');
+            const savedName = localStorage.getItem('ms_user_name');
+            if(savedNum) document.getElementById('user_num').value = savedNum;
+            if(savedName) {
+                document.getElementById('user_name').value = savedName;
+                document.getElementById('top_user_name').innerText = `Hey, ${savedName}!`;
+                document.getElementById('top_user_name').classList.remove('hidden');
+            }
+
+            try {
+                const res = await fetch(DB_API_URL);
+                window.allMoviesData = await res.json();
+                const allMovies = window.allMoviesData;
+                
+                MOVIE_DATA = allMovies.find(m => m._id === movieId);
+                if(!MOVIE_DATA) return;
+
+                document.getElementById('movie_poster').src = MOVIE_DATA.imageUrl;
+                document.getElementById('movie_title').innerText = MOVIE_DATA.title;
+                document.getElementById('movie_year').innerText = MOVIE_DATA.year || "2026";
+                document.getElementById('m_cat').innerText = MOVIE_DATA.category;
+                document.getElementById('m_rate').innerText = MOVIE_DATA.rating || "8.5";
+                document.getElementById('m_qual').innerText = MOVIE_DATA.quality || "4K Ultra";
+                document.getElementById('movie_size_bottom').innerText = MOVIE_DATA.fileSize || "1.4 GB";
+                document.getElementById('movie_desc').innerText = MOVIE_DATA.description || "මෙම සිනමා නිර්මාණය දැන් ඉතා ඉහළ ගුණාත්මක භාවයෙන් යුතුව ලබා ගත හැක.";
+                document.getElementById('page_title').innerText = `${MOVIE_DATA.title} | MovieStream`;
+
+                const bgUrl = MOVIE_DATA.bgImage || MOVIE_DATA.imageUrl;
+                document.getElementById('hero').style.backgroundImage = `url('${bgUrl}')`;
+
+                // ======== TV SERIES SEASON DROPDOWN LOGIC ========
+                if (MOVIE_DATA.category === 'TV Series') {
+                    document.getElementById('tv_info').innerText = `Season ${MOVIE_DATA.season || '-'} • Episode ${MOVIE_DATA.episode || '-'}`;
+                    document.getElementById('tv_info').classList.remove('hidden');
+
+                    window.SHOW_EPISODES = allMovies.filter(m => m.title.toLowerCase() === MOVIE_DATA.title.toLowerCase());
+                    
+                    if (window.SHOW_EPISODES.length > 0) {
+                        document.getElementById('episodes_section').classList.remove('hidden');
+                        
+                        const seasons = [...new Set(window.SHOW_EPISODES.map(ep => ep.season).filter(Boolean))].sort();
+                        const seasonSelect = document.getElementById('season_selector');
+                        seasonSelect.innerHTML = '';
+                        
+                        seasons.forEach(s => {
+                            const opt = document.createElement('option');
+                            opt.value = s;
+                            opt.innerText = `Season ${s.replace(/[^0-9]/g, '')}`; 
+                            if (s === MOVIE_DATA.season) opt.selected = true;
+                            seasonSelect.appendChild(opt);
+                        });
+
+                        renderEpisodes(MOVIE_DATA.season || seasons[0]);
+                    }
+                }
+
+                const screens = [MOVIE_DATA.ss1, MOVIE_DATA.ss2, MOVIE_DATA.ss3].filter(s => s && s.trim() !== "");
+                if (screens.length > 0) {
+                    document.getElementById('screenshots_section').classList.remove('hidden');
+                    const screenList = document.getElementById('screen_list');
+                    screenList.innerHTML = '';
+                    screens.forEach(s => { 
+                        screenList.innerHTML += `<div class="ss-card animate__animated animate__fadeInUp"><img src="${s}"></div>`; 
+                    });
+                }
+
+                document.body.classList.add('loaded');
+            } catch (e) { console.error(e); }
+        };
+
+        function renderEpisodes(selectedSeason) {
+            const epSelect = document.getElementById('episode_selector');
+            epSelect.innerHTML = '';
+            
+            const filteredEps = window.SHOW_EPISODES.filter(ep => ep.season === selectedSeason);
+            
+            filteredEps.sort((a,b) => {
+                const epA = Number(a.episode?.replace(/[^0-9]/g, '')) || 0;
+                const epB = Number(b.episode?.replace(/[^0-9]/g, '')) || 0;
+                return epA - epB;
+            }).forEach(ep => {
+                const opt = document.createElement('option');
+                opt.value = ep._id;
+                opt.innerText = `Episode ${ep.episode || '-'}`;
+                if (ep._id === MOVIE_DATA._id) opt.selected = true;
+                epSelect.appendChild(opt);
+            });
+
+            if (!filteredEps.find(e => e._id === MOVIE_DATA._id)) {
+                if (filteredEps.length > 0) {
+                    changeEpisode(filteredEps[0]._id);
+                }
+            }
+        }
+
+        function changeEpisode(epId) {
+            const ep = window.SHOW_EPISODES.find(e => e._id === epId);
+            if(ep) {
+                MOVIE_DATA = ep;
+                
+                window.history.pushState({path: `movie-details.html?id=${epId}`}, '', `movie-details.html?id=${epId}`);
+                
+                document.getElementById('tv_info').innerText = `Season ${ep.season || '-'} • Episode ${ep.episode || '-'}`;
+                document.getElementById('movie_size_bottom').innerText = ep.fileSize || "1.4 GB";
+                
+                if(player && document.getElementById('video_display_area').style.display === 'block') {
+                    const msgId = ep.downloadLink.split('/').pop();
+                    player.src({ type: 'video/mp4', src: `${API_BASE_URL}/stream/${msgId}` });
+                    player.poster(ep.imageUrl);
+                    player.play();
+                }
+            }
+        }
+
+        function liveSearch(q) {
+            const spotlight = document.getElementById('search_spotlight');
+            const content = document.getElementById('spotlight_content');
+            document.getElementById('clear_search').style.display = q.length > 0 ? 'block' : 'none';
+            if(q.length < 2) { closeSpotlight(null, true); return; }
+            
+            const uniqueTitles = new Set();
+            const filtered = [];
+            window.allMoviesData.forEach(m => {
+                if (m.title.toLowerCase().includes(q.toLowerCase())) {
+                    const t = m.title.toLowerCase().trim();
+                    if (!uniqueTitles.has(t)) {
+                        uniqueTitles.add(t);
+                        filtered.push(m);
+                    }
+                }
+            });
+
+            if(filtered.length > 0) {
+                spotlight.classList.remove('hidden'); spotlight.classList.add('flex');
+                setTimeout(() => spotlight.classList.add('opacity-100'), 10);
+                content.innerHTML = filtered.slice(0, 4).map(m => `<div class="spotlight-card cursor-pointer flex flex-col items-center" onclick="location.href='movie-details.html?id=${m._id}'"><div class="w-[160px] md:w-[240px] rounded-2xl overflow-hidden border-2 border-[#00d2ff]/40 shadow-2xl bg-black"><img src="${m.imageUrl}" class="w-full aspect-[2/3] object-cover"></div><h3 class="text-white font-black text-[11px] mt-3 uppercase text-center">${m.title}</h3></div>`).join('');
+            }
+        }
+
+        function closeSpotlight(e, force = false) {
+            const spot = document.getElementById('search_spotlight');
+            if (force || (e && e.target.id === 'search_spotlight')) { spot.classList.remove('opacity-100'); setTimeout(() => { spot.classList.remove('flex'); spot.classList.add('hidden'); }, 300); }
+        }
+        function clearSearch() { document.getElementById('main_search').value = ''; closeSpotlight(null, true); }
+
+        function closeAllPopups() { document.querySelectorAll('.custom-popup').forEach(p => p.style.display = 'none'); }
+        function warnOnline() { closeAllPopups(); document.getElementById('popup_online_warn').style.display = 'flex'; }
+        function openWhatsAppStep1() { closeAllPopups(); document.getElementById('popup_step1').style.display = 'flex'; }
+        function openWhatsAppStep2() { closeAllPopups(); document.getElementById('popup_step2').style.display = 'flex'; }
+        function closeWarning() { document.getElementById('popup_warning').style.display = 'none'; }
+        
+        function resetToButtons() { 
+            closeAllPopups(); 
+            document.getElementById('download_anchor').scrollIntoView({ behavior: 'smooth' }); 
+        }
+
+        function validateStep1() {
+            const num = document.getElementById('user_num').value;
+            if(!num.startsWith("94") || num.length !== 11 || isNaN(num)) {
+                document.getElementById('warning_msg').innerText = "කරුණාකර ඔබගේ WhatsApp අංකය 947XXXXXXXX ආකාරයට නිවැරදිව ඇතුළත් කරන්න.";
+                document.getElementById('popup_warning').style.display = 'flex';
+                return;
+            }
+            localStorage.setItem('ms_user_num', num);
+            closeAllPopups(); document.getElementById('popup_step2').style.display = 'flex';
+        }
+
+        function validateStep2() {
+            const name = document.getElementById('user_name').value;
+            const engRegex = /^[A-Za-z\s]+$/; 
+            if(!engRegex.test(name)) {
+                document.getElementById('warning_msg').innerText = "කරුණාකර ඔබගේ නම ඉංග්‍රීසි අකුරු (English Letters) පමණක් භාවිතා කර ඇතුළත් කරන්න.";
+                document.getElementById('popup_warning').style.display = 'flex';
+                return;
+            }
+            
+            localStorage.setItem('ms_user_name', name);
+            document.getElementById('final_greet').innerText = `Hey ${name}!`;
+            document.getElementById('top_user_name').innerText = `Hey, ${name}!`;
+            document.getElementById('top_user_name').classList.remove('hidden');
+
+            closeAllPopups(); document.getElementById('popup_step3').style.display = 'flex';
+        }
+
+        function sendToVPSBot() {
+            const num = localStorage.getItem('ms_user_num');
+            const name = localStorage.getItem('ms_user_name');
+            
+            closeAllPopups();
+            const msg = MOVIE_DATA.category === 'TV Series' 
+                ? `නියමයි ${name}! ${MOVIE_DATA.title} (S${MOVIE_DATA.season} E${MOVIE_DATA.episode}) දැන් අපගේ බොට් හරහා ඔබේ WhatsApp වෙත යොමු කර ඇත.`
+                : `නියමයි ${name}! ${MOVIE_DATA.title} චිත්‍රපටය දැන් අපගේ බොට් හරහා ඔබේ WhatsApp වෙත යොමු කර ඇත.`;
+            
+            document.getElementById('congrats_msg').innerText = msg;
+            document.getElementById('popup_congrats').style.display = 'flex';
+
+            fetch(`${API_BASE_URL}/send-movie`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number: num, userName: name, movieName: MOVIE_DATA.title, directLink: MOVIE_DATA.downloadLink })
+            }).catch(e => console.error("Bot fail", e));
+        }
+
+        function playNowDirectly() {
+            closeAllPopups();
+            const msgId = MOVIE_DATA.downloadLink.split('/').pop();
+            document.getElementById('video_display_area').style.display = 'block';
+
+            const videoUrl = `${API_BASE_URL}/stream/${msgId}`;
+
+            if (!player) {
+                player = videojs('player', { fluid: true, playbackRates: [0.5, 1, 1.25, 1.5, 2] });
+                player.src({ type: 'video/mp4', src: videoUrl });
+                player.poster(MOVIE_DATA.imageUrl);
+                player.play();
+
+                player.on('fullscreenchange', function() {
+                    if (player.isFullscreen() && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+                        try { screen.orientation.lock('landscape'); } catch(e) {}
+                    }
+                });
+            } else {
+                player.src({ type: 'video/mp4', src: videoUrl });
+                player.poster(MOVIE_DATA.imageUrl);
+                player.play();
+            }
+            
+            document.getElementById('video_display_area').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closeVideo() { 
+            if(player) player.pause(); 
+            document.getElementById('video_display_area').style.display = 'none'; 
+        }
+    </script>
+</body>
+</html>
