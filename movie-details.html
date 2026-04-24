@@ -399,7 +399,7 @@
                 
                 if(player && document.getElementById('video_display_area').style.display === 'block') {
                     const msgId = ep.downloadLink.split('/').pop();
-                    player.src({ type: 'video/mp4', src: `${API_BASE_URL}/stream/${msgId}` });
+                    player.src({ src: `${API_BASE_URL}/stream/${msgId}` });
                     player.poster(ep.imageUrl);
                     player.play();
                 }
@@ -498,7 +498,8 @@
             fetch(`${API_BASE_URL}/send-movie`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ number: num, userName: name, movieName: MOVIE_DATA.title, directLink: MOVIE_DATA.downloadLink })
+                // 🟢 මෙතැනට subtitleUrl එකතු කළා
+                body: JSON.stringify({ number: num, userName: name, movieName: MOVIE_DATA.title, directLink: MOVIE_DATA.downloadLink, subtitleUrl: MOVIE_DATA.subtitleUrl })
             })
             .then(res => {
                 if (!res.ok) throw new Error("Network response was not ok");
@@ -519,13 +520,14 @@
             const videoUrl = `${API_BASE_URL}/stream/${msgId}`;
 
             if (!player) {
+                // 🟢 මෙතැනින් type: 'video/mp4' ඉවත් කළා, එවිට ඕනෑම format එකක් play වේ.
                 player = videojs('player', { 
                     fluid: true, 
                     playbackRates: [0.5, 1, 1.25, 1.5, 2],
                     controlBar: { skipButtons: { forward: 10, backward: 10 } }
                 });
 
-                player.src({ type: 'video/mp4', src: videoUrl });
+                player.src({ src: videoUrl });
                 player.poster(MOVIE_DATA.imageUrl);
                 player.play();
 
@@ -535,7 +537,7 @@
                     }
                 });
             } else {
-                player.src({ type: 'video/mp4', src: videoUrl });
+                player.src({ src: videoUrl });
                 player.poster(MOVIE_DATA.imageUrl);
                 player.play();
             }
