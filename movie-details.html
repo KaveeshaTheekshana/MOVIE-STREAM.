@@ -24,6 +24,7 @@
         }
         .hero-overlay { background: radial-gradient(circle at 20% 50%, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.95) 100%), linear-gradient(to top, #020202 5%, transparent 40%); position: absolute; inset: 0; }
         
+        /* Responsive Poster */
         .poster-img { width: 280px; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
         @media (max-width: 768px) { .poster-img { width: 200px; } }
         
@@ -37,17 +38,9 @@
         .video-js .vjs-big-play-button { background-color: rgba(229,9,20,0.8); border: none; border-radius: 50%; width: 80px; height: 80px; line-height: 80px; margin-top: -40px; margin-left: -40px; }
         .video-js:hover .vjs-big-play-button { background-color: var(--neon-red); }
         
-        .video-js .vjs-loading-spinner {
-            border-color: rgba(229, 9, 20, 0.7) !important;
-            border-top-color: #E50914 !important;
-        }
-
-        .video-js .vjs-subs-caps-button .vjs-icon-placeholder::before {
-            color: #E50914 !important;
-        }
-
         .custom-popup { backdrop-filter: blur(25px); background: rgba(0,0,0,0.9); display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
         
+        /* Smooth Mobile Popup */
         .popup-box { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 40px; text-align: center; }
         @media (max-width: 768px) { .popup-box { padding: 30px 20px; border-radius: 20px; } }
         .popup-box::-webkit-scrollbar { width: 4px; }
@@ -84,6 +77,7 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 8, 68, 0); }
         }
 
+        /* 🌟 SUBTITLE & CC SETTINGS STYLING 🌟 */
         .video-js .vjs-text-track-cue > div {
             background-color: rgba(0, 0, 0, 0.75) !important;
             color: #FFFFFF !important;
@@ -198,7 +192,7 @@
         <div class="max-w-5xl mx-auto px-4 text-right">
             <button onclick="closeVideo()" class="text-white text-3xl md:text-4xl mb-4 hover:text-red-600 transition"><i class="fa-solid fa-xmark"></i></button>
             <div class="player-wrapper">
-                <video id="player" class="video-js vjs-big-play-centered" controls preload="auto" playsinline crossorigin="anonymous"></video>
+                <video id="player" class="video-js vjs-big-play-centered" controls preload="auto" playsinline></video>
             </div>
         </div>
     </section>
@@ -356,100 +350,20 @@
         window.allMoviesData = []; 
         let player = null;
 
-        // 🌟 [AUTO TRANSLATE] Any Language to Sinhala using Google Translate API 🌟
-        async function loadSubtitleDirectly(playerInstance, srtUrl) {
-            if (!srtUrl || srtUrl.trim() === '') return;
+        // 🌟 [NEW] SRT to WebVTT Converter for Web Player
+        async function getVttUrl(srtUrl) {
+            if (!srtUrl || srtUrl.trim() === '') return null;
             try {
-                // Proxy හරහා SRT එක බාගන්නවා
-                const proxyUrl = `${API_BASE_URL}/proxy-subtitle?url=${encodeURIComponent(srtUrl)}`;
-                const res = await fetch(proxyUrl);
-                if (!res.ok) throw new Error("Failed to fetch subtitle via proxy");
-                
-                const vttText = await res.text();
-                
-                // Track එක Player එකට Add කරනවා
-                const track = playerInstance.addTextTrack('captions', 'Sinhala (Auto-Sub)', 'si');
-                track.mode = 'showing'; 
-                
-                const lines = vttText.split('\n');
-                let cues = [];
-                let i = 2; // Skip WEBVTT header
-                
-                // VTT එකේ කෑලි ටික (Cues) වෙන් කරගන්නවා
-                while (i < lines.length) {
-                    if (lines[i].includes('-->')) {
-                        const timeLine = lines[i];
-                        const textLines = [];
-                        i++;
-                        while (i < lines.length && lines[i].trim() !== '') {
-                            textLines.push(lines[i]);
-                            i++;
-                        }
-                        
-                        const [startStr, endStr] = timeLine.split(' --> ');
-                        if (startStr && endStr) {
-                            cues.push({
-                                start: parseVttTime(startStr),
-                                end: parseVttTime(endStr),
-                                text: textLines.join(' ')
-                            });
-                        }
-                    } else {
-                        i++;
-                    }
-                }
-
-                // බ්‍රවුසරයේ තියෙන Cue ක්ලාස් එක තෝරගන්නවා
-                const CueClass = window.VTTCue || window.TextTrackCue;
-
-                // 🌟 Batch Translate (පේළි 30 ගානේ Google API එකට යවනවා) 🌟
-                const BATCH_SIZE = 30;
-                for (let k = 0; k < cues.length; k += BATCH_SIZE) {
-                    const batch = cues.slice(k, k + BATCH_SIZE);
-                    
-                    // '<br>' එකක් දාලා වාක්‍ය ටික එකතු කරනවා (Google මේක කඩන්නේ නෑ)
-                    const combinedText = batch.map(c => c.text).join(' <br> ');
-                    
-                    try {
-                        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=si&dt=t&q=${encodeURIComponent(combinedText)}`;
-                        const tRes = await fetch(url);
-                        const data = await tRes.json();
-                        
-                        // ආපහු එන උත්තරේ එකට අලවනවා
-                        const translatedText = data[0].map(x => x[0]).join('');
-                        
-                        // ආයෙත් '<br>' එකෙන් කඩලා වෙන් කරනවා
-                        const translatedArray = translatedText.split(/<\s*br\s*>/i);
-                        
-                        for (let j = 0; j < batch.length; j++) {
-                            const finalTxt = translatedArray[j] ? translatedArray[j].trim() : batch[j].text;
-                            track.addCue(new CueClass(batch[j].start, batch[j].end, finalTxt));
-                        }
-                    } catch (err) {
-                        // මොකක් හරි Error එකක් ආවොත්, පරණ (Original) අකුරු ටිකම දානවා
-                        for (let j = 0; j < batch.length; j++) {
-                            track.addCue(new CueClass(batch[j].start, batch[j].end, batch[j].text));
-                        }
-                    }
-                }
+                const res = await fetch(srtUrl);
+                const srtText = await res.text();
+                // Replace commas with dots for milliseconds format required by VTT
+                const vttText = "WEBVTT\n\n" + srtText.replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2');
+                const blob = new Blob([vttText], { type: 'text/vtt' });
+                return URL.createObjectURL(blob);
             } catch(e) {
-                console.error("Subtitle load error:", e);
+                console.error("Subtitle fetch error:", e);
+                return null;
             }
-        }
-
-        // Helper to convert VTT time string (00:00:00.000) to seconds
-        function parseVttTime(timeStr) {
-            const parts = timeStr.trim().split(':');
-            let seconds = 0;
-            if (parts.length === 3) {
-                seconds += parseInt(parts[0], 10) * 3600; // Hours
-                seconds += parseInt(parts[1], 10) * 60;   // Minutes
-                seconds += parseFloat(parts[2]);          // Seconds
-            } else if (parts.length === 2) {
-                seconds += parseInt(parts[0], 10) * 60;
-                seconds += parseFloat(parts[1]);
-            }
-            return seconds;
         }
 
         window.onload = async () => {
@@ -582,9 +496,11 @@
                 document.getElementById('hero_quality').innerText = ep.quality || "4K";
                 document.getElementById('main_hero_quality').innerText = ep.quality || "4K";
                 
+                // 🌟 [NEW] Update Episode Description Auto!
                 document.getElementById('movie_desc').innerText = ep.description || "මෙම සිනමා නිර්මාණය දැන් ඉතා ඉහළ ගුණාත්මක භාවයෙන් යුතුව ලබා ගත හැක.";
                 
                 if(player && document.getElementById('video_display_area').style.display === 'block') {
+                    // 🌟 [NEW] Direct call to reuse source update + subtitle parsing
                     playNowDirectly();
                 }
             }
@@ -670,12 +586,14 @@
             closeAllPopups(); document.getElementById('popup_step3').style.display = 'flex';
         }
 
+        // 🌟 [NEW LOGIC FOR TV SERIES NAME FORMATTING] 🌟
         function sendToVPSBot() {
             const num = localStorage.getItem('ms_user_num');
             const name = localStorage.getItem('ms_user_name');
             
             closeAllPopups();
             
+            // TV Series නම් S01 E03 විදිහට නම හදනවා, නැත්නම් නම විතරයි
             let formattedName = MOVIE_DATA.title;
             if (MOVIE_DATA.category === 'TV Series') {
                 let s = String(MOVIE_DATA.season || '1').padStart(2, '0');
@@ -683,14 +601,9 @@
                 formattedName = `${MOVIE_DATA.title} S${s} E${e}`;
             }
 
-            // 🌟 Subtitle තියෙනවා නම් නමට අගින් (Sub) කියලා දානවා
-            if (MOVIE_DATA.subtitleUrl) {
-                formattedName += " (Sub)";
-            }
-
             const msg = MOVIE_DATA.category === 'TV Series' 
                 ? `නියමයි ${name}! ${formattedName} චිත්‍රපටය දැන් අපගේ පද්ධතිය හරහා ඔබේ WhatsApp වෙත යොමු කර ඇත.`
-                : `නියමයි ${name}! ${formattedName} චිත්‍රපටය දැන් අපගේ පද්ධතිය හරහා ඔබේ WhatsApp වෙත යොමු කර ඇත.`;
+                : `නියමයි ${name}! ${MOVIE_DATA.title} චිත්‍රපටය දැන් අපගේ පද්ධතිය හරහා ඔබේ WhatsApp වෙත යොමු කර ඇත.`;
             
             fetch(`${API_BASE_URL}/send-movie`, {
                 method: 'POST',
@@ -741,15 +654,25 @@
             player.src({ type: vType, src: videoUrl });
             player.poster(MOVIE_DATA.imageUrl);
 
-            // පරණ Tracks මකනවා
-            const tracks = player.textTracks();
-            for (let i = tracks.length - 1; i >= 0; i--) {
-                player.removeRemoteTextTrack(tracks[i]);
+            const tracks = player.remoteTextTracks();
+            if (tracks) {
+                let numTracks = tracks.length;
+                for (let i = numTracks - 1; i >= 0; i--) {
+                    player.removeRemoteTextTrack(tracks[i]);
+                }
             }
 
-            // 🌟 සබ්ටයිටල් ලෝඩ් කරනවා
             if (MOVIE_DATA.subtitleUrl) {
-                await loadSubtitleDirectly(player, MOVIE_DATA.subtitleUrl);
+                const vttUrl = await getVttUrl(MOVIE_DATA.subtitleUrl);
+                if (vttUrl) {
+                    player.addRemoteTextTrack({
+                        kind: 'captions',
+                        src: vttUrl,
+                        srclang: 'si',
+                        label: 'Sinhala Sub',
+                        default: true 
+                    }, false);
+                }
             }
 
             player.play();
